@@ -13,6 +13,7 @@ let bgmAudio = null;
 let fullQuizData = [];
 let quizData = [];
 let gameInitialized = false;
+let bricks = []; // <== 벽돌 배열 전역 선언 추가
 
 // 게임 초기화 함수
 function initializeGame() {
