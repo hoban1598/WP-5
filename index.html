@@ -3,71 +3,128 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>디버깅 브레이커 (Debugging Breaker)</title>
+    <title>웹 게임</title>
     <link rel="stylesheet" href="style.css">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>디버깅 브레이커</h1>
-            <div class="game-info">
-                <div class="score">점수: <span id="score">0</span></div>
-                <div class="lives">생명: <span id="lives">3</span></div>
-            </div>
-        </header>
+<div id="startScreen">
+    <div class="setup-wrapper">
+        <div class="setup-title">초기설정</div>
 
-        <div id="game-container">
-            <!-- 시작 화면 -->
-            <div id="start-screen">
-                <h2>디버깅 브레이커</h2>
-                <p>웹 프로그래밍 개념을 게임으로 학습해보세요!</p>
-                
-                <div class="difficulty-selection">
-                    <h3>난이도 선택</h3>
-                    <div class="difficulty-buttons">
-                        <button class="difficulty-btn selected" data-difficulty="easy">쉬움</button>
-                        <button class="difficulty-btn" data-difficulty="normal">보통</button>
-                        <button class="difficulty-btn" data-difficulty="hard">어려움</button>
-                    </div>
-                    <div class="difficulty-description">
-                        <p id="difficulty-desc">쉬움: 공 속도가 느리고, 패들이 넓습니다.</p>
-                    </div>
+        <div class="setup-section">
+            <div class="section-title">캐릭터 선택</div>
+            <div class="select-row">
+                <div class="select-card selectable paddle-option" data-paddle="man.png">
+                    <img src="man1.png" alt="남기사">
+                    <div>남기사</div>
                 </div>
-                
-                <button id="start-button">게임 시작</button>
-            </div>
-
-            <!-- 게임 캔버스 -->
-            <canvas id="game-canvas"></canvas>
-
-            <!-- 퀴즈 모달 -->
-            <div id="quiz-modal">
-                <div class="modal-content">
-                    <h3 id="quiz-category">HTML 퀴즈</h3>
-                    <div id="quiz-question">질문이 여기에 표시됩니다.</div>
-                    <div id="quiz-options"></div>
-                    <div id="quiz-explanation" class="hidden"></div>
+                <div class="select-card selectable paddle-option" data-paddle="woman.png">
+                    <img src="woman1.png" alt="여기사">
+                    <div>여기사</div>
                 </div>
             </div>
+        </div>
 
-            <!-- 게임 오버 화면 -->
-            <div id="game-over">
-                <h2>게임 오버</h2>
-                <p>최종 점수: <span id="final-score">0</span></p>
-                <button id="restart-button">다시 시작</button>
+        <div class="setup-section">
+            <div class="section-title">펫 선택</div>
+            <div class="select-row">
+                <div class="select-card selectable ball-option" data-ball="ball1.png">
+                    <img src="파랑펫.png" alt="파란 펫">
+                </div>
+                <div class="select-card selectable ball-option" data-ball="빨간펫.png">
+                    <img src="빨간펫.png" alt="빨간 펫">
+                </div>
             </div>
+        </div>
 
-            <!-- 게임 클리어 화면 -->
-            <div id="game-clear">
-                <h2>축하합니다!</h2>
-                <p>모든 벽돌을 제거했습니다!</p>
-                <p>최종 점수: <span id="clear-score">0</span></p>
-                <button id="play-again-button">다시 플레이</button>
+        <div class="setup-section">
+            <div class="section-title">배경음악 설정</div>
+            <div class="select-row">
+                <label class="select-label"><input type="radio" name="bgm" value="bgm1.mp3" checked /> A</label>
+                <label class="select-label"><input type="radio" name="bgm" value="bgm2.mp3" /> B</label>
             </div>
+        </div>
+
+        <div class="setup-section">
+            <div class="section-title">스테이지 선택 (난이도)</div>
+            <div class="select-row">
+                <button class="stage-btn" data-stage="1">Stage1</button>
+                <button class="stage-btn" data-stage="2">Stage2</button>
+                <button class="stage-btn" data-stage="3">Stage3</button>
+            </div>
+        </div>
+
+        <button id="startGameBtn">게임시작</button>
+    </div>
+</div>
+
+
+
+<div id="game-container" style="display : none;">
+    <!-- 우측 상단 게임 정보 패널 -->
+    <div id="game-info">
+        <div class="info-top">
+            <div class="info-box" id="score">⭐ 점수: 0</div>
+            <div class="info-box" id="lives">❤️ 목숨: 3</div>
+            <div class="info-box" id="timer">⏰ 10:00</div>
+        </div>
+        <div class="info-bottom">
+            <div class="info-box" id="stage">Stage 1</div>
+            <div class="info-box" id="equipment">장비 : 0/3</div>
+            <button id="backToSetup" class="back-btn">초기설정으로</button>
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <!-- 게임 스테이지 및 캔버스 -->
+    <div id="stage1" class="game-stage">
+        <canvas id="gameCanvas"></canvas>
+    </div>
+</div>
+<!-- 퀴즈 모달 -->
+<div id="quizModal" style="display: none;">
+    <div class="close-btn" onclick="closeQuiz()">&times;</div>
+    <div class="quiz-title" id="quizTitle">퀴즈</div>
+    <div class="quiz-box">
+        <div class="quiz-question" id="quizQuestion">문제 텍스트</div>
+        <div class="quiz-options">
+            <div class="quiz-option" onclick="closeQuiz()">A. 보기1</div>
+            <div class="quiz-option" onclick="closeQuiz()">B. 보기2</div>
+            <div class="quiz-option" onclick="closeQuiz()">C. 보기3</div>
+            <div class="quiz-option" onclick="closeQuiz()">D. 보기4</div>
+        </div>
+        <div id="quizResult" class="quiz-result" style="display: none;">
+            <div id="resultText" class="result-text"></div>
+            <div id="resultExplanation" class="result-explanation"></div>
+            <button onclick="closeQuiz()" class="continue-btn">계속하기</button>
+        </div>
+    </div>
+</div>
+<!-- 장비 획득 모달 -->
+<div id="itemModal" style="display: none;">
+    <div class="item-modal-content">
+        <img id="itemImage" src="" alt="장비 이미지" class="item-image" />
+        <div id="itemTitle" class="item-title">전설의 ○○ 획득!</div>
+        <div class="item-progress">
+            전설의 장비 수집 진행도<br />
+            <div class="item-icons">
+                <img id="itemIcon1" class="icon" src="sword.png" />
+                <img id="itemIcon2" class="icon" src="armor.png" />
+                <img id="itemIcon3" class="icon" src="dragon.png" />
+            </div>
+            <div id="itemText" class="item-text">1/3개 수집 완료</div>
+        </div>
+        <button id="continueBtn" class="continue-btn">계속하기</button>
+    </div>
+</div>
+<!-- 퀴즈 결과 표시 영역 추가 -->
+<div id="quizResult" class="quiz-result" style="display: none;">
+    <div id="resultText">정답!</div>
+    <div id="resultExplanation">해설 내용이 표시됩니다.</div>
+    <button onclick="closeQuiz()" class="continue-btn">완료</button>
+</div>
+
+
+
+<script src="script.js"></script>
 </body>
 </html>

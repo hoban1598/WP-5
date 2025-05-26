@@ -5,28 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="9e94e63a-3771-4618-b1d2-460094e0c308" name="변경" comment="처음">
-      <change afterPath="$PROJECT_DIR$/.idea/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/web_programming.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Frame 18.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/armor.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/bgm1.mp3" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/bgm2.mp3" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dragon.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/index.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/man.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/man1.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/quiz.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/quiz_blocks.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/script.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/style.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sword.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/woman.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/woman1.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/빨간펫.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/파랑펫.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -36,6 +15,18 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN",
+    "assignee": "Seodaeun-hub"
+  }
+}]]></component>
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/hoban1598/WP-5.git",
+    "accountId": "d83032b5-fa75-48bf-9151-958b612cfff1"
+  }
+}]]></component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 5
 }</component>
@@ -49,7 +40,7 @@
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "master",
+    "git-widget-placeholder": "daeun",
     "last_opened_file_path": "C:/Java/java_projects/web_programming",
     "settings.editor.selected.configurable": "org.jetbrains.plugins.github.ui.GithubSettingsConfigurable"
   }
@@ -62,6 +53,23 @@
       <option name="presentableId" value="Default" />
       <updated>1748248711561</updated>
     </task>
+    <task id="LOCAL-00001" summary="처음">
+      <option name="closed" value="true" />
+      <created>1748264883036</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1748264883036</updated>
+    </task>
+    <task id="LOCAL-00002" summary="처음">
+      <option name="closed" value="true" />
+      <created>1748264989039</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1748264989039</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
