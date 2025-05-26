@@ -3,71 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>디버깅 브레이커 (Debugging Breaker)</title>
+    <title>Code of Legend</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>디버깅 브레이커</h1>
-            <div class="game-info">
-                <div class="score">점수: <span id="score">0</span></div>
-                <div class="lives">생명: <span id="lives">3</span></div>
-            </div>
-        </header>
-
-        <div id="game-container">
-            <!-- 시작 화면 -->
-            <div id="start-screen">
-                <h2>디버깅 브레이커</h2>
-                <p>웹 프로그래밍 개념을 게임으로 학습해보세요!</p>
-                
-                <div class="difficulty-selection">
-                    <h3>난이도 선택</h3>
-                    <div class="difficulty-buttons">
-                        <button class="difficulty-btn selected" data-difficulty="easy">쉬움</button>
-                        <button class="difficulty-btn" data-difficulty="normal">보통</button>
-                        <button class="difficulty-btn" data-difficulty="hard">어려움</button>
-                    </div>
-                    <div class="difficulty-description">
-                        <p id="difficulty-desc">쉬움: 공 속도가 느리고, 패들이 넓습니다.</p>
-                    </div>
-                </div>
-                
-                <button id="start-button">게임 시작</button>
-            </div>
-
-            <!-- 게임 캔버스 -->
-            <canvas id="game-canvas"></canvas>
-
-            <!-- 퀴즈 모달 -->
-            <div id="quiz-modal">
-                <div class="modal-content">
-                    <h3 id="quiz-category">HTML 퀴즈</h3>
-                    <div id="quiz-question">질문이 여기에 표시됩니다.</div>
-                    <div id="quiz-options"></div>
-                    <div id="quiz-explanation" class="hidden"></div>
-                </div>
-            </div>
-
-            <!-- 게임 오버 화면 -->
-            <div id="game-over">
-                <h2>게임 오버</h2>
-                <p>최종 점수: <span id="final-score">0</span></p>
-                <button id="restart-button">다시 시작</button>
-            </div>
-
-            <!-- 게임 클리어 화면 -->
-            <div id="game-clear">
-                <h2>축하합니다!</h2>
-                <p>모든 벽돌을 제거했습니다!</p>
-                <p>최종 점수: <span id="clear-score">0</span></p>
-                <button id="play-again-button">다시 플레이</button>
-            </div>
+    <div class="main-wrapper">
+        <div class="title">CODE OF LEGENDS</div>
+        <div class="subtitle">전설의 기사여, 모험을 떠나라!</div>
         </div>
-    </div>
-
-    <script src="script.js"></script>
+        <div class="card-container">
+          <div class="card card-sword">
+            <div>
+              <img class="card-image" src="Img/sword.png" alt="전설의 검" />
+              <div class="card-title">전설의 검</div>
+              <div>
+                <div class="card-description">Stage 1 완료 시 획득</div>
+                <div class="card-tag">HTML & CSS 마스터</div>
+              </div>
+            </div>
+          </div>
+          <div class="card card-armor">
+            <div>
+              <img class="card-image" src="Img/armor.png" alt="전설의 갑옷" />
+              <div class="card-title">전설의 갑옷</div>
+              <div>
+                <div class="card-description">Stage 2 완료 시 획득</div>
+                <div class="card-tag">JavaScript마스터</div>
+              </div>
+            </div>
+          </div>
+          <div class="card card-dragon">
+            <div>
+              <img class="card-image" src="Img/dragon.png" alt="전설의 용" />
+              <div class="card-title">전설의 용</div>
+              <div>
+                <div class="card-description">Stage 3 완료 시 획득</div>
+                <div class="card-tag">jQuery 마스터</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="start-button-wrapper">
+            <div class="start-button-text">⚔️ 모험 시작하기 ⚔️</div>
+        </div>
+      </div>
 </body>
 </html>
