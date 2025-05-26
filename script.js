@@ -65,10 +65,10 @@ function showItemModal(stage) {
   const item = itemInfo[stage - 1];
   document.getElementById("itemImage").src = item.img;
   document.getElementById("itemTitle").textContent = item.name;
-  document.getElementById("itemText").textContent = ${stage}/3개 수집 완료;
+  document.getElementById("itemText").textContent = `${stage}/3개 수집 완료`;
 
   for (let i = 0; i < 3; i++) {
-    const icon = document.getElementById(itemIcon${i + 1});
+    const icon = document.getElementById(`itemIcon${i + 1}`);
     icon.classList.toggle("active", i < stage);
   }
 
@@ -92,8 +92,8 @@ let timeLeft = getInitialTime(currentStage);
 let timerInterval = null;
 
 function updateStageInfo() {
-    document.getElementById("stage").textContent = Stage ${currentStage};
-    document.getElementById("equipment").textContent = 장비 : ${currentStage - 1}/3;
+    document.getElementById("stage").textContent = `Stage ${currentStage}`;
+    document.getElementById("equipment").textContent = `장비 : ${currentStage - 1}/3`;
 }
 
 // 스테이지별 벽돌 설정
@@ -186,7 +186,7 @@ function resetStage() {
 
     // 타이머 초기화
     timeLeft = getInitialTime(currentStage);
-    document.getElementById("timer").textContent = ⏰ ${formatTime(timeLeft)};
+    document.getElementById("timer").textContent = `⏰ ${formatTime(timeLeft)}`;
     clearInterval(timerInterval);
     timerInterval = null;
 
@@ -199,7 +199,7 @@ function startTimer() {
         // 퀴즈 중에도 시간은 계속 흐르게 한다
         if (gameStarted) {
             timeLeft--;
-            document.getElementById("timer").textContent = ⏰ ${formatTime(timeLeft)};
+            document.getElementById("timer").textContent = `⏰ ${formatTime(timeLeft)}`;
 
             if (timeLeft <= 0) {
                 clearInterval(timerInterval);
@@ -213,7 +213,7 @@ function startTimer() {
 function formatTime(seconds) {
     const min = Math.floor(seconds / 60).toString().padStart(2, "0");
     const sec = (seconds % 60).toString().padStart(2, "0");
-    return ${min}:${sec};
+    return `${min}:${sec}`;
 }
 
 function getInitialTime(stage) {
@@ -227,7 +227,7 @@ function getInitialTime(stage) {
 function moveToNextStage() {
     currentStage++;
     timeLeft = getInitialTime(currentStage);
-    document.getElementById("timer").textContent = ⏰ ${formatTime(timeLeft)};
+    document.getElementById("timer").textContent = `⏰ ${formatTime(timeLeft)}`;
     clearInterval(timerInterval);
     startTimer();
     // 여기서 스테이지 관련 데이터도 리로드해야 함
@@ -405,7 +405,7 @@ function keyDownHandler(e) {
 
         if (!timerInterval) {
             timeLeft = getInitialTime(currentStage); // 현재 스테이지에 맞는 시간 설정
-            document.getElementById("timer").textContent = ⏰ ${formatTime(timeLeft)};
+            document.getElementById("timer").textContent = `⏰ ${formatTime(timeLeft)}`;
             startTimer();
         }
     } else if (e.key === "Left" || e.key === "ArrowLeft") {
@@ -414,7 +414,7 @@ function keyDownHandler(e) {
 
         if (!timerInterval) {
             timeLeft = getInitialTime(currentStage); // 현재 스테이지에 맞는 시간 설정
-            document.getElementById("timer").textContent = ⏰ ${formatTime(timeLeft)};
+            document.getElementById("timer").textContent = `⏰ ${formatTime(timeLeft)}`;
             startTimer();
         }
     }
@@ -424,7 +424,7 @@ function startGameIfNeeded() {
 
     if (!timerInterval) {
         timeLeft = getInitialTime(currentStage);
-        document.getElementById("timer").textContent = ⏰ ${formatTime(timeLeft)};
+        document.getElementById("timer").textContent = `⏰ ${formatTime(timeLeft)}`;
         startTimer();
     }
 }
@@ -505,11 +505,11 @@ function drawBricks() {
 }
 
 function drawScore() {
-    document.getElementById("score").textContent = ⭐ 점수: ${score};
+    document.getElementById("score").textContent = `⭐ 점수: ${score}`;
 }
 
 function drawLives() {
-    document.getElementById("lives").textContent = ❤️ 목숨: ${lives};
+    document.getElementById("lives").textContent = `❤️ 목숨: ${lives}`;
 }
 
 function draw() {
@@ -573,13 +573,13 @@ function openQuizModal(label, quizData) {
         return;
     }
 
-    document.getElementById("quizTitle").textContent = ${label} 퀴즈;
+    document.getElementById("quizTitle").textContent = `${label} 퀴즈`;
     document.getElementById("quizQuestion").textContent = quizData.question;
 
     const options = document.querySelectorAll(".quiz-option");
     options.forEach((opt, index) => {
         if (quizData.options[index]) {
-            opt.textContent = ${String.fromCharCode(65 + index)}. ${quizData.options[index]};
+            opt.textContent = `${String.fromCharCode(65 + index)}. ${quizData.options[index]}`;
             opt.onclick = () => handleQuizAnswer(index, quizData);
         }
     });
@@ -594,7 +594,6 @@ function handleQuizAnswer(selectedIndex, quizObj) {
     const explanation = document.getElementById("resultExplanation");
     const options = document.querySelectorAll(".quiz-option");
 
-    // 옵션 잠금 및 스타일 지정
     options.forEach((opt, index) => {
         opt.style.pointerEvents = "none";
 
@@ -614,7 +613,7 @@ function handleQuizAnswer(selectedIndex, quizObj) {
         resultText.textContent = "오답!";
     }
 
-    explanation.textContent = 해설 : ${quizObj.explanation};
+    explanation.textContent = `해설 : ${quizObj.explanation}`;
     resultBox.style.display = "block";
 }
 
