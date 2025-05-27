@@ -110,10 +110,12 @@ $(document).ready(function () {
   //점수로직
   //목숨 줄어드는 로직
   //제한시간 줄어드는 로직
+  //퀴즈 벽돌깨면 퀴즈 팝업 화면 뜨는 로직
+  //스테이지 클리어시 장비획득 팝업 화면 뜨는 로직
   //벽돌깨기 게임 로직
   //스테이지 클리어시 다음스테이지로 넘어가고 스테이지 3클리어시 엔딩화면인 ending-wrapper로 화면전환되는 로직
   // 5. 엔딩 화면
-  const endingMessages = [
+  const beforeDragonMessages = [
     "마왕: …후후, 결국 여기까지 왔구나.",
     "마왕: 네가 모은 HTML, CSS, JS, jQuery… 그 모든 스킬은 내 시험을 무너뜨리기엔 부족하다!",
     "주인공: 이 목소리… 설마…",
@@ -126,20 +128,63 @@ $(document).ready(function () {
     "주인공: 용, 준비됐지?"
   ];
 
-  let endingMessageIndex = 0;
+  const afterDragonMessages = [
+    "마왕: 웹의 힘이라니… 큭… 무너지다니…!",
+    "주인공: 이제 모든 수업은 끝났어요. 안녕히 계세요, 교수님.",
+    "…그리고 웹의 전설은 그렇게 막을 내렸다."
+  ];
 
+  let endingMessageIndex = 0;
+  let dragonPhase = false;
+
+  function showEndingStep(step) {
+    $('.ending-step').hide();
+    $(`.ending-step[data-step="${step}"]`).fadeIn(300);
+  }
+
+  function startEndingSequence() {
+    showEndingStep(0); // 첫화면 (대사 없음)
+    setTimeout(() => {
+      showEndingStep(1); // 어두워지고 대사 박스
+      $('.ending-message').html(beforeDragonMessages[0]);
+    }, 1000);
+  }
+//'다음' 버튼 로직
   $('.ending-button.next').on('click', function () {
-    endingMessageIndex++;
-    if (endingMessageIndex < endingMessages.length) {
-      $('.ending-message').html(endingMessages[endingMessageIndex]);
-    }
-    if (endingMessageIndex === endingMessages.length - 1) {
-      $('.ending-button.next').hide();
-      $('.ending-wrapper').fadeOut(300, function () {
-        $('.endingcredit-wrapper').fadeIn(300);
-      });
+    if (!dragonPhase) {
+      endingMessageIndex++;
+      if (endingMessageIndex < beforeDragonMessages.length) {
+        $('.ending-message').html(beforeDragonMessages[endingMessageIndex]);
+      }
+      if (beforeDragonMessages[endingMessageIndex] === "주인공: 용, 준비됐지?") {
+        showEndingStep(2);
+        dragonPhase = true;
+        endingMessageIndex = -1;
+        setTimeout(() => {
+          showEndingStep(3);
+          $('.ending-message').html(afterDragonMessages[0]);
+          endingMessageIndex = 0;
+        }, 1000);
+      }
+    } else {
+      endingMessageIndex++;
+      if (endingMessageIndex < afterDragonMessages.length) {
+        $('.ending-message').html(afterDragonMessages[endingMessageIndex]);
+      } else {
+        showEndingStep(4);
+        setTimeout(() => {
+          $('.ending-wrapper').fadeOut(300, function () {
+            $('.endingcredit-wrapper').fadeIn(300);
+          });
+        }, 1000);
+      }
     }
   });
+
+  // 자동 시작
+  startEndingSequence();
+
+  // "건너뛰기" 버튼
   $('.ending-button.skip').on('click', function () {
     $('.ending-wrapper').fadeOut(300, function () {
       $('.endingcredit-wrapper').fadeIn(300);

@@ -547,31 +547,101 @@ button.start-button-wrapper:hover {
 }
 
 .ending-message-box {
-  width: 500px;
-  height: 130px;
+  width: 26vw;
+  height: 12vh;
   position: absolute;
-  left: 710px;
-  top: 475px;
+  left: 50%;
+  top: 44%;
+  transform: translate(-50%, -50%);
   background: #142011;
   border-radius: 10px;
   outline: 1px solid #59460F;
   outline-offset: -1px;
   overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .ending-message {
-  position: absolute;
-  left: 123px;
-  top: 53px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  text-align: center;
   color: #D0D4D9;
-  font-size: 18px;
+  font-size: 1.5vw;
   font-family: "Noto Sans";
   font-weight: 500;
+  text-align: center;
+  padding: 1vw;
+  line-height: 1.4;
 }
+
+.ending-button.next,
+.ending-button.skip {
+  width: 4.5vw;
+  height: 5.5vh;
+  border-radius: 20px;
+  font-size: 1vw;
+  font-family: "Noto Sans";
+  font-weight: 700;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: 70%;
+  cursor: pointer;
+}
+
+.ending-button.next {
+  left: 47%;
+  background: radial-gradient(ellipse at center, #EA950A 0%, #EA660B 100%);
+  transform: translateX(-100%);
+}
+
+.ending-button.skip {
+  left: 53%;
+  background: radial-gradient(ellipse at center, #B3B3B3 0%, #848484 100%);
+}
+
+.ending-background {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+  overflow: hidden;
+  background-image: url(Img/ending.png);
+  background-size: cover;
+  background-position: center;
+}
+.ending-character {
+  width: 13.3vw; /* ~256px on 1920px */
+  height: 13.3vw;
+  max-width: 256px;
+  max-height: 256px;
+  position: absolute;
+  left: 50%;
+  top: 28.4vh; /* ~307px on 1080px */
+  transform: translateX(-50%);
+}
+
+.ending-icon {
+  width: 4vw;
+  height: 4vw;
+  max-width: 76px;
+  max-height: 76px;
+  position: absolute;
+  left: 40.3vw; /* ~775px/1920 */
+  top: 63.3vh; /* ~684px/1080 */
+}
+
+.ending-dragon {
+  width: 13.5vw;
+  height: 13.5vw;
+  max-width: 258px;
+  max-height: 258px;
+  position: absolute;
+  left: 52.6vw; /* approx 1010px/1920 */
+  top: 39.5vh;  /* approx 427px/1080 */
+  transform: translate(-50%, 0);
+}
+
 
 .ending-button {
   position: absolute;
@@ -605,7 +675,90 @@ button.start-button-wrapper:hover {
 }
 
 /* ============================= */
+/* 엔딩 화면 - 두 번째 장면: 어두워지고 대사 등장 */
+/* ============================= */
+.ending-dark-scene {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+  background: rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+  z-index: 21;
+}
+
+/* ============================= */
+/* 엔딩 화면 - 세 번째 장면: 용 등장 */
+/* ============================= */
+.ending-dragon-scene {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+  background-image: url("https://placehold.co/1920x1080");
+  background-size: cover;
+  background-position: center;
+  overflow: hidden;
+  z-index: 22;
+}
+
+/* ============================= */
+/* 엔딩 화면 - 공통 이미지 스타일 */
+/* ============================= */
+.ending-character {
+  width: 13.3vw;
+  height: 13.3vw;
+  max-width: 256px;
+  max-height: 256px;
+  position: absolute;
+  left: 50%;
+  top: 28.4vh;
+  transform: translateX(-50%);
+}
+
+.ending-dragon {
+  width: 13.5vw;
+  height: 13.5vw;
+  max-width: 258px;
+  max-height: 258px;
+  position: absolute;
+  left: 52.6vw;
+  top: 39.5vh;
+  transform: translate(-50%, 0);
+}
+
+.ending-icon {
+  width: 4vw;
+  height: 4vw;
+  max-width: 76px;
+  max-height: 76px;
+  position: absolute;
+  left: 48.6vw;
+  top: 55.5vh;
+  transform: translate(-50%, 0);
+}
+
+/* ============================= */
 /* 엔딩크레딧 화면 */
 /* ============================= */
 .endingcredit-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-image: url(https://placehold.co/1920x1080);
+  background-size: cover;
+  background-position: center;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.ending-credit-text {
+  text-align: center;
+  color: #D1A21E;
+  font-size: 72px;
+  font-family: "Source Serif Pro";
+  font-weight: 600;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.25);
 }
