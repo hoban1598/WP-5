@@ -1,19 +1,106 @@
+/*******************************************************************************
+ * 전역 변수 및 상수 정의
+ *******************************************************************************/
+
+// Canvas 관련 설정
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
+canvas.width = 720;
+canvas.height = 580;
 
-// 이미지 초기화
+// 이미지 및 오디오 관련 설정
 const paddleImage = new Image();
 const ballImage = new Image();
 let selectedPaddle = "man.png";
 let selectedBall = "파랑펫.png";
 let selectedBgm = "bgm1.mp3";
-let selectedStage = 1;
 let bgmAudio = null;
 
+// 게임 상태 관련 변수
+let selectedStage = 1;
+let currentStage = 1;
+let gameInitialized = false;
+let gameStarted = false;
+let isQuizOpen = false;
+let score = 0;
+let lives = 3;
+
+// 퀴즈 관련 데이터
 let fullQuizData = [];
 let quizData = [];
-let gameInitialized = false;
-let bricks = []; // <== 벽돌 배열 전역 선언 추가
+let bricks = [];
+
+// 공 관련 설정
+const ballRadius = 10;
+let x, y, dx, dy;
+
+// 패들 관련 설정
+const paddleHeight = 67;
+const paddleWidth = 156;
+let paddleX = (canvas.width - paddleWidth) / 2;
+
+// 벽돌 관련 설정
+const brickRowCount = 3;
+const brickColumnCount = 7;
+const brickWidth = 75;
+const brickHeight = 20;
+const brickPadding = 10;
+const brickOffsetTop = 30;
+const brickOffsetLeft = 35;
+
+// 키보드 입력 상태
+let rightPressed = false;
+let leftPressed = false;
+
+// 타이머 관련
+let timeLeft = getInitialTime(currentStage);
+let timerInterval = null;
+
+/*******************************************************************************
+ * 스테이지 설정 및 아이템 정보
+ *******************************************************************************/
+
+// 스테이지별 설정
+const stageConfig = {
+    1: {
+        total: 20,    // 전체 벽돌 수 (14 일반 + 6 퀴즈)
+        quiz: 6,      // 퀴즈 벽돌 수
+        types: ["HTML", "CSS"]  // 스테이지 1의 퀴즈 종류
+    },
+    2: {
+        total: 30,    // 전체 벽돌 수 (21 일반 + 9 퀴즈)
+        quiz: 9,      // 퀴즈 벽돌 수
+        types: ["JS"]  // 스테이지 2의 퀴즈 종류
+    },
+    3: {
+        total: 30,    // 전체 벽돌 수 (21 일반 + 9 퀴즈)
+        quiz: 9,      // 퀴즈 벽돌 수
+        types: ["jQuery"]  // 스테이지 3의 퀴즈 종류
+    }
+};
+
+// 아이템 정보
+const itemInfo = [
+  {
+    name: "전설의 검 획득!",
+    img: "sword.png",
+    iconIndex: 0
+  },
+  {
+    name: "전설의 갑옷 획득!",
+    img: "armor.png",
+    iconIndex: 1
+  },
+  {
+    name: "전설의 용 획득!",
+    img: "dragon.png",
+    iconIndex: 2
+  }
+];
+
+/*******************************************************************************
+ * 게임 초기화 및 시작 관련 함수
+ *******************************************************************************/
 
 // 게임 초기화 함수
 function initializeGame() {
@@ -36,86 +123,161 @@ function initializeGame() {
         });
 }
 
-const ballRadius = 10;  // 예: 공 반지름
-let x, y, dx, dy;        // 공 좌표 및 속도
-
-canvas.width = 720;
-canvas.height = 580;
-
-let currentStage = 1;
-let isQuizOpen = false;
-const itemInfo = [
-  {
-    name: "전설의 검 획득!",
-    img: "sword.png",        // 실제 경로로 교체
-    iconIndex: 0
-  },
-  {
-    name: "전설의 갑옷 획득!",
-    img: "armor.png",
-    iconIndex: 1
-  },
-  {
-    name: "전설의 용 획득!",
-    img: "dragon.png",
-    iconIndex: 2
-  }
-];
-
-function showItemModal(stage) {
-  const item = itemInfo[stage - 1];
-  document.getElementById("itemImage").src = item.img;
-  document.getElementById("itemTitle").textContent = item.name;
-  document.getElementById("itemText").textContent = `${stage}/3개 수집 완료`;
-
-  for (let i = 0; i < 3; i++) {
-    const icon = document.getElementById(`itemIcon${i + 1}`);
-    icon.classList.toggle("active", i < stage);
-  }
-
-  document.getElementById("itemModal").style.display = "block";
-}
-
-// 버튼 이벤트
-document.getElementById("continueBtn").addEventListener("click", () => {
-  document.getElementById("itemModal").style.display = "none";
-  currentStage++;
-  score = 0;
-  resetStage();
-});
-
-// 패들
-const paddleHeight = 67;
-const paddleWidth = 156;
-let paddleX = (canvas.width - paddleWidth) / 2;
-let gameStarted = false;
-let timeLeft = getInitialTime(currentStage);
-let timerInterval = null;
-
-function updateStageInfo() {
-    document.getElementById("stage").textContent = `Stage ${currentStage}`;
-    document.getElementById("equipment").textContent = `장비 : ${currentStage - 1}/3`;
-}
-
-// 스테이지별 벽돌 설정
-const stageConfig = {
-    1: {
-        total: 20,    // 전체 벽돌 수 (14 일반 + 6 퀴즈)
-        quiz: 6,      // 퀴즈 벽돌 수
-        types: ["HTML", "CSS"]  // 스테이지 1의 퀴즈 종류
-    },
-    2: {
-        total: 30,    // 전체 벽돌 수 (21 일반 + 9 퀴즈)
-        quiz: 9,      // 퀴즈 벽돌 수
-        types: ["JS"]  // 스테이지 2의 퀴즈 종류
-    },
-    3: {
-        total: 30,    // 전체 벽돌 수 (21 일반 + 9 퀴즈)
-        quiz: 9,      // 퀴즈 벽돌 수
-        types: ["jQuery"]  // 스테이지 3의 퀴즈 종류
+// 게임 시작 함수
+function startGame() {
+    // BGM 설정
+    try {
+        if (bgmAudio) {
+            bgmAudio.pause();
+        }
+        bgmAudio = new Audio(selectedBgm);
+        bgmAudio.loop = true;
+        bgmAudio.play().catch(error => {
+            console.log('BGM 재생 실패:', error);
+            // BGM 재생 실패해도 게임은 계속 진행
+        });
+    } catch (error) {
+        console.log('BGM 초기화 실패:', error);
+        // BGM 초기화 실패해도 게임은 계속 진행
     }
-};
 
+    // 게임 상태 초기화
+    currentStage = selectedStage;
+    updateStageInfo();
+    resetStage();
+
+    // 화면 전환
+    document.getElementById("startScreen").style.display = "none";
+    document.getElementById("game-container").style.display = "block";
+
+    // 게임 시작
+    requestAnimationFrame(draw);
+}
+
+// 이미지 로드 및 게임 시작
+function startGameWithImages() {
+    // 이미지 로드 시작
+    paddleLoaded = false;
+    ballLoaded = false;
+
+    // 이미지 로드 완료 체크
+    function checkImagesLoaded() {
+        if (paddleLoaded && ballLoaded) {
+            startGame();
+        }
+    }
+
+    // 이미지 로드 이벤트
+    paddleImage.onload = () => {
+        paddleLoaded = true;
+        checkImagesLoaded();
+    };
+
+    ballImage.onload = () => {
+        ballLoaded = true;
+        checkImagesLoaded();
+    };
+
+    // 이미지 로드 시작
+    paddleImage.src = selectedPaddle;
+    ballImage.src = selectedBall;
+}
+
+/*******************************************************************************
+ * 게임 메인 로직 함수
+ *******************************************************************************/
+
+// 메인 게임 루프
+function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawBricks();
+    drawBall();
+    drawPaddle();
+    drawScore();
+    drawLives();
+
+    if (!isQuizOpen) {
+        collisionDetection();
+
+        if (gameStarted) {
+            if(x + dx > canvas.width - ballRadius || x + dx < ballRadius) {
+                dx = -dx;
+            }
+            if(y + dy < ballRadius) {
+                dy = -dy;
+            } else if (y + dy > canvas.height - paddleHeight - ballRadius - 10) {
+                if(x > paddleX && x < paddleX + paddleWidth) {
+                    dy = -dy;
+                } else {
+                    lives--;
+                    if(!lives) {
+                        alert("게임 오버!");
+                        lives = 3;
+                        score = 0;
+                        resetStage();
+                    } else {
+                        x = canvas.width/2;
+                        y = canvas.height - paddleHeight - ballRadius - 10;
+                        dx = getBallSpeed(currentStage);
+                        dy = -getBallSpeed(currentStage);
+                        paddleX = (canvas.width - paddleWidth)/2;
+                        gameStarted = false;
+                    }
+                }
+            }
+
+            x += dx;
+            y += dy;
+        }
+
+        if(rightPressed && paddleX < canvas.width - paddleWidth) {
+            paddleX += 7;
+        } else if(leftPressed && paddleX > 0) {
+            paddleX -= 7;
+        }
+    }
+
+    requestAnimationFrame(draw);
+}
+
+// 충돌 감지
+function collisionDetection() {
+    for(let c=0; c<brickColumnCount; c++) {
+        for(let r=0; r<brickRowCount; r++) {
+            const b = bricks[c][r];
+            if(b && b.status === 1) {
+                if(x > b.x && x < b.x+brickWidth && y > b.y && y < b.y+brickHeight) {
+                    dy = -dy;
+
+                    if (b.type === "quiz") {
+                        const questions = b.questions;
+                        if (Array.isArray(questions) && questions.length > 0) {
+                            const randomQuiz = questions[Math.floor(Math.random() * questions.length)];
+                            openQuizModal(b.label, randomQuiz);
+                        }
+                    }
+
+                    b.status = 0;
+                    score++;
+
+                    if (score === brickRowCount * brickColumnCount) {
+                        if (currentStage < 3) {
+                            showItemModal(currentStage);
+                        } else {
+                            showItemModal(currentStage);
+                            document.getElementById("continueBtn").onclick = () => {
+                                alert("축하합니다! 모든 전설의 장비를 수집하고 게임을 클리어했습니다!");
+                                document.location.reload();
+                            };
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+// 스테이지 리셋
 function resetStage() {
     const config = stageConfig[currentStage];
 
@@ -195,6 +357,10 @@ function resetStage() {
     updateStageInfo();
 }
 
+/*******************************************************************************
+ * 타이머 관련 함수
+ *******************************************************************************/
+
 function startTimer() {
     timerInterval = setInterval(() => {
         // 퀴즈 중에도 시간은 계속 흐르게 한다
@@ -225,253 +391,13 @@ function getInitialTime(stage) {
         default: return 600;
     }
 }
-function moveToNextStage() {
-    currentStage++;
-    timeLeft = getInitialTime(currentStage);
-    document.getElementById("timer").textContent = `⏰ ${formatTime(timeLeft)}`;
-    clearInterval(timerInterval);
-    startTimer();
-    // 여기서 스테이지 관련 데이터도 리로드해야 함
-}
 
-// 스테이지별 공 속도 설정 함수 추가가
-function getBallSpeed(stage) {
-    switch(stage) {
-        case 1: return 3;
-        case 2: return 4;
-        case 3: return 5;
-        default: return 3;
-    }
-}
+/*******************************************************************************
+ * 그리기 관련 함수
+ *******************************************************************************/
 
 function drawBall() {
   ctx.drawImage(ballImage, x - ballRadius, y - ballRadius, ballRadius * 2, ballRadius * 2);
-}
-
-// 벽돌
-const brickRowCount = 3;
-const brickColumnCount = 7;
-const brickWidth = 75;
-const brickHeight = 20;
-const brickPadding = 10;
-const brickOffsetTop = 30;
-const brickOffsetLeft = 35;
-
-
-
-// 셔플 함수
-function shuffle(array) {
-    for(let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-    }
-    return array;
-}
-
-
-// 스테이지 선택 이벤트
-document.querySelectorAll(".stage-btn").forEach(btn => {
-  btn.addEventListener("click", () => {
-    selectedStage = parseInt(btn.dataset.stage);
-    document.querySelectorAll(".stage-btn").forEach(b => b.classList.remove("selected"));
-    btn.classList.add("selected");
-  });
-});
-
-let paddleLoaded = false;
-let ballLoaded = false;
-
-paddleImage.onload = () => {
-  paddleLoaded = true;
-  if (ballLoaded) startGame();
-};
-ballImage.onload = () => {
-  ballLoaded = true;
-  if (paddleLoaded) startGame();
-};
-
-// 게임 시작 함수
-function startGame() {
-    // BGM 설정
-    try {
-        if (bgmAudio) {
-            bgmAudio.pause();
-        }
-        bgmAudio = new Audio(selectedBgm);
-        bgmAudio.loop = true;
-        bgmAudio.play().catch(error => {
-            console.log('BGM 재생 실패:', error);
-            // BGM 재생 실패해도 게임은 계속 진행
-        });
-    } catch (error) {
-        console.log('BGM 초기화 실패:', error);
-        // BGM 초기화 실패해도 게임은 계속 진행
-    }
-
-    // 게임 상태 초기화
-    currentStage = selectedStage;
-    updateStageInfo();
-    resetStage();
-
-    // 화면 전환
-    document.getElementById("startScreen").style.display = "none";
-    document.getElementById("game-container").style.display = "block";
-
-    // 게임 시작
-    requestAnimationFrame(draw);
-}
-
-// 게임 시작 버튼 이벤트
-document.getElementById("startGameBtn").addEventListener("click", () => {
-    if (!gameInitialized) {
-        initializeGame().then(() => {
-            startGameWithImages();
-        });
-    } else {
-        startGameWithImages();
-    }
-});
-
-// 이미지 로드 및 게임 시작
-function startGameWithImages() {
-    // 이미지 로드 시작
-    paddleLoaded = false;
-    ballLoaded = false;
-
-    // 이미지 로드 완료 체크
-    function checkImagesLoaded() {
-        if (paddleLoaded && ballLoaded) {
-            startGame();
-        }
-    }
-
-    // 이미지 로드 이벤트
-    paddleImage.onload = () => {
-        paddleLoaded = true;
-        checkImagesLoaded();
-    };
-
-    ballImage.onload = () => {
-        ballLoaded = true;
-        checkImagesLoaded();
-    };
-
-    // 이미지 로드 시작
-    paddleImage.src = selectedPaddle;
-    ballImage.src = selectedBall;
-}
-
-document.querySelectorAll(".paddle-option").forEach(img => {
-  img.addEventListener("click", () => {
-    selectedPaddle = img.dataset.paddle;
-    document.querySelectorAll(".paddle-option").forEach(el => el.classList.remove("selected"));
-    img.classList.add("selected");
-  });
-});
-
-document.querySelectorAll(".ball-option").forEach(img => {
-  img.addEventListener("click", () => {
-    selectedBall = img.dataset.ball;
-    document.querySelectorAll(".ball-option").forEach(el => el.classList.remove("selected"));
-    img.classList.add("selected");
-  });
-});
-
-function highlightSelection(selector, selectedElement) {
-  document.querySelectorAll(selector).forEach(el => el.classList.remove("selected"));
-  selectedElement.classList.add("selected");
-}
-
-let rightPressed = false;
-let leftPressed = false;
-
-// 점수
-let score = 0;
-
-// 목숨
-let lives = 3;
-
-document.addEventListener("keydown", keyDownHandler);
-document.addEventListener("keyup", keyUpHandler);
-document.addEventListener("keydown", function(e) {
-    if(["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(e.key)) {
-        e.preventDefault();
-    }
-}, false);
-
-function keyDownHandler(e) {
-    if (e.key === "Right" || e.key === "ArrowRight") {
-        rightPressed = true;
-        gameStarted = true;
-
-        if (!timerInterval) {
-            timeLeft = getInitialTime(currentStage); // 현재 스테이지에 맞는 시간 설정
-            document.getElementById("timer").textContent = `⏰ ${formatTime(timeLeft)}`;
-            startTimer();
-        }
-    } else if (e.key === "Left" || e.key === "ArrowLeft") {
-        leftPressed = true;
-        gameStarted = true;
-
-        if (!timerInterval) {
-            timeLeft = getInitialTime(currentStage); // 현재 스테이지에 맞는 시간 설정
-            document.getElementById("timer").textContent = `⏰ ${formatTime(timeLeft)}`;
-            startTimer();
-        }
-    }
-}
-function startGameIfNeeded() {
-    gameStarted = true;
-
-    if (!timerInterval) {
-        timeLeft = getInitialTime(currentStage);
-        document.getElementById("timer").textContent = `⏰ ${formatTime(timeLeft)}`;
-        startTimer();
-    }
-}
-
-function keyUpHandler(e) {
-    if(e.key === "Right" || e.key === "ArrowRight") {
-        rightPressed = false;
-    } else if(e.key === "Left" || e.key === "ArrowLeft") {
-        leftPressed = false;
-    }
-}
-
-function collisionDetection() {
-    for(let c=0; c<brickColumnCount; c++) {
-        for(let r=0; r<brickRowCount; r++) {
-            const b = bricks[c][r];
-            if(b && b.status === 1) {
-                if(x > b.x && x < b.x+brickWidth && y > b.y && y < b.y+brickHeight) {
-                    dy = -dy;
-
-                    if (b.type === "quiz") {
-                        const questions = b.questions;
-                        if (Array.isArray(questions) && questions.length > 0) {
-                            const randomQuiz = questions[Math.floor(Math.random() * questions.length)];
-                            openQuizModal(b.label, randomQuiz);
-                        }
-                    }
-
-                    b.status = 0;
-                    score++;
-
-                    if (score === brickRowCount * brickColumnCount) {
-                        if (currentStage < 3) {
-                            showItemModal(currentStage);
-                        } else {
-                            showItemModal(currentStage);
-                            document.getElementById("continueBtn").onclick = () => {
-                                alert("축하합니다! 모든 전설의 장비를 수집하고 게임을 클리어했습니다!");
-                                document.location.reload();
-                            };
-                        }
-                    }
-                }
-            }
-        }
-    }
 }
 
 function drawPaddle() {
@@ -513,61 +439,10 @@ function drawLives() {
     document.getElementById("lives").textContent = `❤️ 목숨: ${lives}`;
 }
 
-function draw() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    drawBricks();
-    drawBall();
-    drawPaddle();
-    drawScore();
-    drawLives();
+/*******************************************************************************
+ * 퀴즈 관련 함수
+ *******************************************************************************/
 
-    if (!isQuizOpen) {
-        collisionDetection();
-
-        if (gameStarted) {
-            if(x + dx > canvas.width - ballRadius || x + dx < ballRadius) {
-                dx = -dx;
-            }
-            if(y + dy < ballRadius) {
-                dy = -dy;
-            } else if (y + dy > canvas.height - paddleHeight - ballRadius - 10) {
-                if(x > paddleX && x < paddleX + paddleWidth) {
-                    dy = -dy;
-                } else {
-                    lives--;
-                    if(!lives) {
-                        alert("게임 오버!");
-                        lives = 3;
-                        score = 0;
-                        resetStage();
-                    } else {
-                        x = canvas.width/2;
-                        y = canvas.height - paddleHeight - ballRadius - 10;
-                        dx = getBallSpeed(currentStage);
-                        dy = -getBallSpeed(currentStage);
-                        paddleX = (canvas.width - paddleWidth)/2;
-                        gameStarted = false;
-                    }
-                }
-            }
-
-            x += dx;
-            y += dy;
-        }
-
-        if(rightPressed && paddleX < canvas.width - paddleWidth) {
-            paddleX += 7;
-        } else if(leftPressed && paddleX > 0) {
-            paddleX -= 7;
-        }
-    }
-
-    requestAnimationFrame(draw);
-}
-
-updateStageInfo();  // 최초 1회 실행 (draw() 위에 넣어도 됨)
-
-// 수정된 openQuizModal
 function openQuizModal(label, quizData) {
     if (!quizData || !quizData.options) {
         console.error("퀴즈 데이터가 올바르지 않습니다:", quizData);
@@ -631,6 +506,146 @@ function closeQuiz() {
     isQuizOpen = false; // 게임 재개
 }
 
+/*******************************************************************************
+ * 유틸리티 함수
+ *******************************************************************************/
+
+function shuffle(array) {
+    for(let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+}
+
+function moveToNextStage() {
+    currentStage++;
+    timeLeft = getInitialTime(currentStage);
+    document.getElementById("timer").textContent = `⏰ ${formatTime(timeLeft)}`;
+    clearInterval(timerInterval);
+    startTimer();
+    // 여기서 스테이지 관련 데이터도 리로드해야 함
+}
+
+function getBallSpeed(stage) {
+    switch(stage) {
+        case 1: return 3;
+        case 2: return 4;
+        case 3: return 5;
+        default: return 3;
+    }
+}
+
+function updateStageInfo() {
+    document.getElementById("stage").textContent = `Stage ${currentStage}`;
+    document.getElementById("equipment").textContent = `장비 : ${currentStage - 1}/3`;
+}
+
+function showItemModal(stage) {
+  const item = itemInfo[stage - 1];
+  document.getElementById("itemImage").src = item.img;
+  document.getElementById("itemTitle").textContent = item.name;
+  document.getElementById("itemText").textContent = `${stage}/3개 수집 완료`;
+
+  for (let i = 0; i < 3; i++) {
+    const icon = document.getElementById(`itemIcon${i + 1}`);
+    icon.classList.toggle("active", i < stage);
+  }
+
+  document.getElementById("itemModal").style.display = "block";
+}
+
+/*******************************************************************************
+ * 이벤트 핸들러
+ *******************************************************************************/
+
+function keyDownHandler(e) {
+    if (e.key === "Right" || e.key === "ArrowRight") {
+        rightPressed = true;
+        gameStarted = true;
+
+        if (!timerInterval) {
+            timeLeft = getInitialTime(currentStage); // 현재 스테이지에 맞는 시간 설정
+            document.getElementById("timer").textContent = `⏰ ${formatTime(timeLeft)}`;
+            startTimer();
+        }
+    } else if (e.key === "Left" || e.key === "ArrowLeft") {
+        leftPressed = true;
+        gameStarted = true;
+
+        if (!timerInterval) {
+            timeLeft = getInitialTime(currentStage); // 현재 스테이지에 맞는 시간 설정
+            document.getElementById("timer").textContent = `⏰ ${formatTime(timeLeft)}`;
+            startTimer();
+        }
+    }
+}
+
+function keyUpHandler(e) {
+    if(e.key === "Right" || e.key === "ArrowRight") {
+        rightPressed = false;
+    } else if(e.key === "Left" || e.key === "ArrowLeft") {
+        leftPressed = false;
+    }
+}
+
+function startGameIfNeeded() {
+    gameStarted = true;
+
+    if (!timerInterval) {
+        timeLeft = getInitialTime(currentStage);
+        document.getElementById("timer").textContent = `⏰ ${formatTime(timeLeft)}`;
+        startTimer();
+    }
+}
+
+// 키보드 이벤트 리스너
+document.addEventListener("keydown", keyDownHandler);
+document.addEventListener("keyup", keyUpHandler);
+document.addEventListener("keydown", function(e) {
+    if(["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(e.key)) {
+        e.preventDefault();
+    }
+}, false);
+
+// 게임 시작 버튼 이벤트
+document.getElementById("startGameBtn").addEventListener("click", () => {
+    if (!gameInitialized) {
+        initializeGame().then(() => {
+            startGameWithImages();
+        });
+    } else {
+        startGameWithImages();
+    }
+});
+
+// 스테이지 선택 이벤트
+document.querySelectorAll(".stage-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    selectedStage = parseInt(btn.dataset.stage);
+    document.querySelectorAll(".stage-btn").forEach(b => b.classList.remove("selected"));
+    btn.classList.add("selected");
+  });
+});
+
+// 패들 선택 이벤트
+document.querySelectorAll(".paddle-option").forEach(img => {
+  img.addEventListener("click", () => {
+    selectedPaddle = img.dataset.paddle;
+    document.querySelectorAll(".paddle-option").forEach(el => el.classList.remove("selected"));
+    img.classList.add("selected");
+  });
+});
+
+// 공 선택 이벤트
+document.querySelectorAll(".ball-option").forEach(img => {
+  img.addEventListener("click", () => {
+    selectedBall = img.dataset.ball;
+    document.querySelectorAll(".ball-option").forEach(el => el.classList.remove("selected"));
+    img.classList.add("selected");
+  });
+});
+
 // 초기 설정으로 돌아가기 버튼 이벤트
 document.getElementById("backToSetup").addEventListener("click", () => {
     // BGM 정지
@@ -655,3 +670,14 @@ document.getElementById("backToSetup").addEventListener("click", () => {
     document.getElementById("game-container").style.display = "none";
     document.getElementById("startScreen").style.display = "flex";
 });
+
+// 계속하기 버튼 이벤트
+document.getElementById("continueBtn").addEventListener("click", () => {
+  document.getElementById("itemModal").style.display = "none";
+  currentStage++;
+  score = 0;
+  resetStage();
+});
+
+// 초기 실행
+updateStageInfo();
