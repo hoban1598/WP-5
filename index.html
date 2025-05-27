@@ -284,14 +284,47 @@
         </div>
         <!--엔딩화면-->
         <div class="ending-wrapper">
-          <div class="ending-message-box">
-            <div class="ending-message"></div>
-          </div>
-          <button class="ending-button next">다음</button>
-          <button class="ending-button skip">건너뛰기</button>
+            <!-- Step 1: 어두워지기 전 (이미지만) -->
+            <div class="ending-step step1">
+              <img class="ending-demonking" src="Img/demon_king.png" alt="demon_king" />
+              <img class="ending-hero" src="Img/ending_male.png" alt="hero" />
+            </div>
+          
+            <!-- Step 2: 어두워지고 대사 나옴 -->
+            <div class="ending-step step2">
+              <div class="ending-dark-overlay"></div>
+              <div class="ending-dialogue-box">
+                <div class="ending-dialogue-text">마왕: …후후, 결국 여기까지 왔구나.</div>
+                <div class="ending-buttons">
+                    <button class="ending-button next">다음</button>
+                    <button class="ending-button skip">건너뛰기</button>
+                  </div>
+                </div>
+            </div>
+            <!-- Step 3: 밝아지고 용 등장 -->
+            <div class="ending-step step3">
+              <img class="ending-demonking" src="Img/demon_king.png" alt="demon_king" />
+              <img class="ending-hero" src="Img/ending_male.png" alt="hero" />
+              <img class="ending-dragon" src="Img/ending_dragon.png" alt="dragon" />
+            </div>
+            <!-- Step 4: 다시 어두워지고 마지막 대사 -->
+            <div class="ending-step step4">
+              <div class="ending-dark-overlay"></div>
+              <div class="ending-dialogue-box">
+                <div class="ending-dialogue-text">마왕: 그 실습들이… 용… 준비됐지?</div>
+              </div>
+              <div class="ending-buttons">
+                <button class="ending-button next">다음</button>
+                <button class="ending-button skip">건너뛰기</button>
+              </div>
+            </div>
         </div>
         <!--엔딩크레딧화면-->
-        <div class="endingcredit-wrapper"></div>
+        <div class="endingcredit-wrapper">
+          <div class="ending-credit-screen">
+            <div class="ending-credit-text">The End</div>
+          </div>
+        </div>
     </div>
 </body>
 </html>
