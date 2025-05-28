@@ -1,330 +1,346 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Code of Legend</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css" />
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="script.js"></script>
 </head>
 <body>
-    <div class="main-wrapper">
-        <div class="start">
-            <!--시작화면-->
-            <div class="title-image">⚔️</div>
-            <div class="title">CODE OF<br> LEGENDS</div>
-            <div class="subtitle">전설의 기사여, 모험을 떠나라!</div>
-            <div class="card-container">
-                <div class="card card-sword">
-                        <img class="card-image" src="Img/sword.png" alt="전설의 검" />
-                        <div class="card-title sword">전설의 검</div>
-                        <div class="card-description">Stage 1 완료 시 획득</div>
-                        <div class="card-tag sword">HTML & CSS 마스터</div>
-                </div>
-                <div class="card card-armor">
-                        <img class="card-image" src="Img/armor.png" alt="전설의 갑옷" />
-                        <div class="card-title armor">전설의 갑옷</div>
-                        <div class="card-description">Stage 2 완료 시 획득</div>
-                        <div class="card-tag armor">JavaScript마스터</div>
-                 </div>
-                <div class="card card-dragon">
-                    
-                        <img class="card-image" src="Img/dragon.png" alt="전설의 용" />
-                        <div class="card-title dragon">전설의 용</div>
-                        <div class="card-description">Stage 3 완료 시 획득</div>
-                        <div class="card-tag dragon">jQuery 마스터</div>
-                </div>
+<div class="main-wrapper">
+    <!-- 게임 정보 패널 -->
+    <div id="game-info">
+        <div class="info-top">
+            <div class="info-box" id="score">
+                <img src="img/star.png" alt="점수" class="info-icon" /> 점수: 0
             </div>
-            <button class="start-button-wrapper" id="start-button">
-                ⚔️ 모험 시작하기 ⚔️
-            </button>
+            <div class="info-box" id="lives">
+                <img src="img/heart.png" alt="목숨" class="info-icon" />
+                <span class="life-container">
+              <img src="img/heart.png" alt="life" class="life-heart" />
+              <img src="img/heart.png" alt="life" class="life-heart" />
+              <img src="img/heart.png" alt="life" class="life-heart" />
+            </span>
+            </div>
+            <div class="info-box" id="timer">
+                <img src="img/clock.png" alt="타이머" class="info-icon" /> 10:00
+            </div>
         </div>
-        <!--프롤로그화면-->
-        <div class="prologue-wrapper">
-            <img class="prologue-character" src="Img/prophet.png" alt="예언가" />
-            <div class="prologue-name">예언가</div>
-            <div class="prologue-message-box">
+        <div class="info-bottom">
+            <div class="info-box" id="stage"></div>
+            <div class="info-box" id="equipment">장비 : 0/3</div>
+            <button id="backToSetup" class="back-btn">초기설정으로</button>
+        </div>
+    </div>
+    <!-- 시작 화면 -->
+    <div class="start">
+        <div class="title-image">⚔️</div>
+        <div class="title">CODE OF<br> LEGENDS</div>
+        <div class="subtitle">전설의 기사여, 모험을 떠나라!</div>
+
+        <div class="card-container">
+            <div class="card card-sword">
+                <img class="card-image" src="img/sword.png" alt="전설의 검" />
+                <div class="card-title sword">전설의 검</div>
+                <div class="card-description">Stage 1 완료 시 획득</div>
+                <div class="card-tag sword">HTML & CSS 마스터</div>
+            </div>
+            <div class="card card-armor">
+                <img class="card-image" src="img/armor.png" alt="전설의 갑옷" />
+                <div class="card-title armor">전설의 갑옷</div>
+                <div class="card-description">Stage 2 완료 시 획득</div>
+                <div class="card-tag armor">JavaScript 마스터</div>
+            </div>
+            <div class="card card-dragon">
+                <img class="card-image" src="img/dragon.png" alt="전설의 용" />
+                <div class="card-title dragon">전설의 용</div>
+                <div class="card-description">Stage 3 완료 시 획득</div>
+                <div class="card-tag dragon">jQuery 마스터</div>
+            </div>
+        </div>
+
+        <button class="start-button-wrapper" id="start-button">⚔️ 모험 시작하기 ⚔️</button>
+    </div>
+
+    <!-- 프롤로그 화면 -->
+    <div class="prologue-wrapper">
+        <img class="prologue-character" src="img/prophet.png" alt="예언가" />
+        <div class="prologue-name">예언가</div>
+        <div class="prologue-message-box">
             <div class="prologue-message">오랜 시간... 웹 세계는 잠들어 있었지</div>
-            </div>
-            <button class="prologue-button next">다음</button>
-            <button class="prologue-button skip">건너뛰기</button>
         </div>
-        <!--설정화면-->
-        <div class="setup-wrapper">
-            <div class="setting-title">초기설정</div>
-            <div class="character-label">캐릭터 선택</div>
-            <div class="character-select">
-                <button class="character-card">
-                    <img class="character-img" src="Img/male.png" />
-                    <div class="character-name-box">
-                        <div class="character-name">남기사</div>
-                    </div>
-                </button>
-                <button class="character-card">
-                    <img class="character-img" src="Img/female.png" />
-                    <div class="character-name-box">
-                        <div class="character-name">여기사</div>
-                    </div>
-                </button>
-            </div>
-            <div class="pet-label">펫선택</div>
-            <div class="pet-select">
-                <button class="pet-option">
-                    <img class="pet-img" src="Img/blue.png" />
-                </button>
-                <button class="pet-option">
-                    <img class="pet-img" src="Img/red.png" />
-                </button>
-            </div>
-            <div class="bgm-label">배경음악 설정</div>
-            <div class="bgm-select">
-                <button class="bgm-option">
-                    <div class="bgm-option-text">A</div>
-                </button>
-                <button class="bgm-option">
-                    <div class="bgm-option-text">B</div>
-                </button>
-            </div>
-            <div class="stage-label">스테이지 선택 (난이도)</div>
-            <div class="stage-select">
-                <button class="stage-button">
-                    <div class="stage-button-text">Stage1</div>
-                </button>
-                <button class="stage-button">
-                    <div class="stage-button-text">Stage2</div>
-                </button>
-                <button class="stage-button">
-                    <div class="stage-button-text">Stage3</div>
-                </button>
-            </div>
-            <button class="setting-start-button">
-                <div class="setting-start-button-text">게임시작</div>
+        <button class="prologue-button next">다음</button>
+        <button class="prologue-button skip">건너뛰기</button>
+    </div>
+
+    <!-- 설정 화면 -->
+    <div class="setup-wrapper">
+        <div class="setting-title">초기설정</div>
+
+        <div class="character-label">캐릭터 선택</div>
+        <div class="character-select">
+            <button class="character-card">
+                <img class="character-img" src="img/male.png" alt="남기사" />
+                <div class="character-name-box">
+                    <div class="character-name">남기사</div>
+                </div>
+            </button>
+            <button class="character-card">
+                <img class="character-img" src="img/female.png" alt="여기사" />
+                <div class="character-name-box">
+                    <div class="character-name">여기사</div>
+                </div>
             </button>
         </div>
-        <!--게임화면-->
-        <div class="game-wrapper">
-            <!-- 우측 상단 게임 정보 패널(ui) -->
-            <div id="game-info">
-              <div class="info-top">
-                <div class="info-box" id="score">
-                  <img src="Img/star.png" alt="점수" class="info-icon" /> 점수: 0
-                </div>
-                <div class="info-box" id="lives">
-                  <img src="Img/heart.png" alt="목숨" class="info-icon" />
-                  <span class="life-container">
-                    <img src="Img/heart.png" alt="life" class="life-heart">
-                    <img src="Img/heart.png" alt="life" class="life-heart">
-                    <img src="Img/heart.png" alt="life" class="life-heart">
-                  </span>
-                </div>
-                <div class="info-box" id="timer">
-                  <img src="Img/clock.png" alt="타이머" class="info-icon" /> 10:00
-                </div>
-              </div>
-              <div class="info-bottom">
-                <div class="info-box" id="stage"></div>
-                <div class="info-box" id="equipment">장비 : 0/3</div>
-                <button id="backToSetup" class="back-btn">초기설정으로</button>
-              </div>
-            </div>
-             <!--스테이지 1-->
-            <div id="stage1" class="game-stage">
-              <div class="stage-background">
+
+        <div class="pet-label">펫 선택</div>
+        <div class="pet-select">
+            <button class="pet-option">
+                <img class="pet-img" src="img/blue.png" alt="파랑펫" />
+            </button>
+            <button class="pet-option">
+                <img class="pet-img" src="img/red.png" alt="빨강펫" />
+            </button>
+        </div>
+
+        <div class="bgm-label">배경음악 설정</div>
+        <div class="bgm-select">
+            <button class="bgm-option">
+                <div class="bgm-option-text">A</div>
+            </button>
+            <button class="bgm-option">
+                <div class="bgm-option-text">B</div>
+            </button>
+        </div>
+
+        <div class="stage-label">스테이지 선택 (난이도)</div>
+        <div class="stage-select">
+            <button class="stage-button">
+                <div class="stage-button-text">Stage1</div>
+            </button>
+            <button class="stage-button">
+                <div class="stage-button-text">Stage2</div>
+            </button>
+            <button class="stage-button">
+                <div class="stage-button-text">Stage3</div>
+            </button>
+        </div>
+
+        <button class="setting-start-button">
+            <div class="setting-start-button-text">게임시작</div>
+        </button>
+    </div>
+
+    <!-- 게임화면, 스테이지, 퀴즈/장비 모달은 다음 블록에 포함됩니다 -->
+    <!-- 게임 화면 -->
+    <div class="game-container" id="game-container" style="display: none;">
+
+        <canvas id="gameCanvas" width="720" height="580"></canvas>
+        <!-- 스테이지 1 -->
+        <div id="stage1" class="game-stage">
+            <div class="stage-background">
+                <!-- 벽돌 행 3줄 -->
                 <div class="brick-row">
-                  <div class="brick quiz">HTML</div>
-                  <div class="brick normal"></div>
-                  <div class="brick quiz">CSS</div>
-                  <div class="brick normal"></div>
-                  <div class="brick normal"></div>
-                  <div class="brick normal"></div>
-                  <div class="brick normal"></div>
-                </div>
-                <div class="brick-row">
-                  <div class="brick quiz">CSS</div>
-                  <div class="brick normal"></div>
-                  <div class="brick normal"></div>
-                  <div class="brick normal"></div>
-                  <div class="brick normal"></div>
-                  <div class="brick quiz">HTML</div>
-                  <div class="brick normal"></div>
-                </div>
-                <div class="brick-row">
-                  <div class="brick normal"></div>
-                  <div class="brick quiz">HTML</div>
-                  <div class="brick normal"></div>
-                  <div class="brick normal"></div>
-                  <div class="brick quiz">CSS</div>
-                  <div class="brick normal"></div>
-                  <div class="brick quiz">HTML</div>
-                </div>
-                <canvas id="gameCanvas1" width="720" height="580"></canvas>
-              </div>
-            </div>
-            <!--스테이지 2-->
-            <div id="stage2" class="game-stage">
-              <div class="stage2-background">
-                <div class="brick-row">
-                  <div class="brick normal"></div>
-                  <div class="brick quiz">JS</div>
-                  <div class="brick normal"></div>
-                  <div class="brick quiz">JS</div>
-                  <div class="brick normal"></div>
-                  <div class="brick quiz">JS</div>
-                  <div class="brick normal"></div>
+                    <div class="brick quiz">HTML</div>
+                    <div class="brick normal"></div>
+                    <div class="brick quiz">CSS</div>
+                    <div class="brick normal"></div>
+                    <div class="brick normal"></div>
+                    <div class="brick normal"></div>
+                    <div class="brick normal"></div>
                 </div>
                 <div class="brick-row">
-                  <div class="brick quiz">JS</div>
-                  <div class="brick normal"></div>
-                  <div class="brick normal"></div>
-                  <div class="brick normal"></div>
-                  <div class="brick quiz">JS</div>
-                  <div class="brick normal"></div>
-                  <div class="brick normal"></div>
+                    <div class="brick quiz">CSS</div>
+                    <div class="brick normal"></div>
+                    <div class="brick normal"></div>
+                    <div class="brick normal"></div>
+                    <div class="brick normal"></div>
+                    <div class="brick quiz">HTML</div>
+                    <div class="brick normal"></div>
                 </div>
                 <div class="brick-row">
-                  <div class="brick normal"></div>
-                  <div class="brick normal"></div>
-                  <div class="brick quiz">JS</div>
-                  <div class="brick normal"></div>
-                  <div class="brick normal"></div>
-                  <div class="brick quiz">JS</div>
-                  <div class="brick normal"></div>
+                    <div class="brick normal"></div>
+                    <div class="brick quiz">HTML</div>
+                    <div class="brick normal"></div>
+                    <div class="brick normal"></div>
+                    <div class="brick quiz">CSS</div>
+                    <div class="brick normal"></div>
+                    <div class="brick quiz">HTML</div>
                 </div>
-                <div class="brick-row">
-                  <div class="brick normal"></div>
-                  <div class="brick quiz">JS</div>
-                  <div class="brick normal"></div>
-                  <div class="brick normal"></div>
-                  <div class="brick quiz">JS</div>
-                  <div class="brick normal"></div>
-                  <div class="brick quiz">JS</div>
-                </div>
-                <canvas id="gameCanvas2" width="720" height="580"></canvas>
-              </div>
-            </div>
-            <!--스테이지 3-->
-            <div id="stage3" class="game-stage">
-              <div class="stage3-background">
-                <div class="brick-row">
-                  <div class="brick normal"></div>
-                  <div class="brick quiz">jQuery</div>
-                  <div class="brick normal"></div>
-                  <div class="brick quiz">jQuery</div>
-                  <div class="brick normal"></div>
-                  <div class="brick quiz">jQuery</div>
-                  <div class="brick normal"></div>
-                </div>
-                <div class="brick-row">
-                  <div class="brick quiz">jQuery</div>
-                  <div class="brick normal"></div>
-                  <div class="brick normal"></div>
-                  <div class="brick normal"></div>
-                  <div class="brick quiz">jQuery</div>
-                  <div class="brick normal"></div>
-                  <div class="brick normal"></div>
-                </div>
-                <div class="brick-row">
-                  <div class="brick normal"></div>
-                  <div class="brick normal"></div>
-                  <div class="brick quiz">jQuery</div>
-                  <div class="brick normal"></div>
-                  <div class="brick normal"></div>
-                  <div class="brick quiz">jQuery</div>
-                  <div class="brick normal"></div>
-                </div>
-                <div class="brick-row">
-                  <div class="brick normal"></div>
-                  <div class="brick quiz">jQuery</div>
-                  <div class="brick normal"></div>
-                  <div class="brick normal"></div>
-                  <div class="brick quiz">jQuery</div>
-                  <div class="brick normal"></div>
-                  <div class="brick quiz">jQuery</div>
-                </div>
-                <canvas id="gameCanvas3" width="720" height="580"></canvas>
-              </div>
             </div>
         </div>
-        <!-- 퀴즈 팝업 화면 -->
-        <div id="quizModal">
-            <div class="close-btn" onclick="closeQuiz()">&times;</div>
-            <div class="quiz-title" id="quizTitle">퀴즈</div>
-            <div class="quiz-box">
-                <div class="quiz-question" id="quizQuestion">문제 텍스트</div>
-                    <div class="quiz-options">
-                        <div class="quiz-option" onclick="closeQuiz()">A. 보기1</div>
-                        <div class="quiz-option" onclick="closeQuiz()">B. 보기2</div>
-                        <div class="quiz-option" onclick="closeQuiz()">C. 보기3</div>
-                        <div class="quiz-option" onclick="closeQuiz()">D. 보기4</div>
-                    </div>
-                    <div id="quizResult" class="quiz-result">
-                        <div id="resultText" class="result-text"></div>
-                        <div id="resultExplanation" class="result-explanation"></div>
-                        <button onclick="closeQuiz()" class="continue-btn">계속하기</button>
-                    </div>
+
+        <!-- 스테이지 2 -->
+        <div id="stage2" class="game-stage">
+            <div class="stage2-background">
+                <div class="brick-row">
+                    <div class="brick normal"></div>
+                    <div class="brick quiz">JS</div>
+                    <div class="brick normal"></div>
+                    <div class="brick quiz">JS</div>
+                    <div class="brick normal"></div>
+                    <div class="brick quiz">JS</div>
+                    <div class="brick normal"></div>
                 </div>
-            </div>
-        <!-- 장비 획득 팝업 화면 -->
-        <div id="itemModal">
-            <div class="item-modal-content">
-                <img id="itemImage" src="" alt="장비 이미지" class="item-image" />
-                <div id="itemTitle" class="item-title">전설의 ○○ 획득!</div>
-                <div class="item-progress">
-                    전설의 장비 수집 진행도<br />
-                    <div class="item-icons">
-                        <img id="itemIcon1" class="icon" src="Img/sword.png" />
-                        <img id="itemIcon2" class="icon" src="Img/armor.png" />
-                        <img id="itemIcon3" class="icon" src="Img/dragon.png" />
-                    </div>
-                    <div id="itemText" class="item-text">1/3개 수집 완료</div>
+                <div class="brick-row">
+                    <div class="brick quiz">JS</div>
+                    <div class="brick normal"></div>
+                    <div class="brick normal"></div>
+                    <div class="brick normal"></div>
+                    <div class="brick quiz">JS</div>
+                    <div class="brick normal"></div>
+                    <div class="brick normal"></div>
                 </div>
-                <button id="continueBtn" class="continue-btn">계속하기</button>
+                <div class="brick-row">
+                    <div class="brick normal"></div>
+                    <div class="brick normal"></div>
+                    <div class="brick quiz">JS</div>
+                    <div class="brick normal"></div>
+                    <div class="brick normal"></div>
+                    <div class="brick quiz">JS</div>
+                    <div class="brick normal"></div>
+                </div>
+                <div class="brick-row">
+                    <div class="brick normal"></div>
+                    <div class="brick quiz">JS</div>
+                    <div class="brick normal"></div>
+                    <div class="brick normal"></div>
+                    <div class="brick quiz">JS</div>
+                    <div class="brick normal"></div>
+                    <div class="brick quiz">JS</div>
+                </div>
             </div>
         </div>
-        <!--엔딩화면-->
-        <div class="ending-wrapper">
-            <!-- Step 1: 어두워지기 전 (이미지만) -->
-            <div class="ending-step step1">
-              <img class="ending-demonking" src="Img/demon_king.png" alt="demon_king" />
-              <img class="ending-hero" src="Img/ending_male.png" alt="hero" />
+
+        <!-- 스테이지 3 -->
+        <div id="stage3" class="game-stage">
+            <div class="stage3-background">
+                <div class="brick-row">
+                    <div class="brick normal"></div>
+                    <div class="brick quiz">jQuery</div>
+                    <div class="brick normal"></div>
+                    <div class="brick quiz">jQuery</div>
+                    <div class="brick normal"></div>
+                    <div class="brick quiz">jQuery</div>
+                    <div class="brick normal"></div>
+                </div>
+                <div class="brick-row">
+                    <div class="brick quiz">jQuery</div>
+                    <div class="brick normal"></div>
+                    <div class="brick normal"></div>
+                    <div class="brick normal"></div>
+                    <div class="brick quiz">jQuery</div>
+                    <div class="brick normal"></div>
+                    <div class="brick normal"></div>
+                </div>
+                <div class="brick-row">
+                    <div class="brick normal"></div>
+                    <div class="brick normal"></div>
+                    <div class="brick quiz">jQuery</div>
+                    <div class="brick normal"></div>
+                    <div class="brick normal"></div>
+                    <div class="brick quiz">jQuery</div>
+                    <div class="brick normal"></div>
+                </div>
+                <div class="brick-row">
+                    <div class="brick normal"></div>
+                    <div class="brick quiz">jQuery</div>
+                    <div class="brick normal"></div>
+                    <div class="brick normal"></div>
+                    <div class="brick quiz">jQuery</div>
+                    <div class="brick normal"></div>
+                    <div class="brick quiz">jQuery</div>
+                </div>
             </div>
-          
-            <!-- Step 2: 어두워지고 대사 나옴 -->
-            <div class="ending-step step2">
-              <div class="ending-dark-overlay"></div>
-              <div class="ending-dialogue-box">
+        </div>
+    </div>
+
+
+    <!-- 장비 획득 팝업 -->
+    <div id="itemModal">
+        <div class="item-modal-content">
+            <img id="itemImage" src="" alt="장비 이미지" class="item-image" />
+            <div id="itemTitle" class="item-title">전설의 ○○ 획득!</div>
+            <div class="item-progress">
+                전설의 장비 수집 진행도<br />
+                <div class="item-icons">
+                    <img id="itemIcon1" class="icon" src="img/sword.png" />
+                    <img id="itemIcon2" class="icon" src="img/armor.png" />
+                    <img id="itemIcon3" class="icon" src="img/dragon.png" />
+                </div>
+                <div id="itemText" class="item-text">1/3개 수집 완료</div>
+            </div>
+            <button id="continueBtn" class="continue-btn">계속하기</button>
+        </div>
+    </div>
+    <!-- 엔딩 화면 -->
+    <div class="ending-wrapper">
+        <!-- Step 1: 어두워지기 전 (이미지만) -->
+        <div class="ending-step step1">
+            <img class="ending-demonking" src="img/demon_king.png" alt="demon_king" />
+            <img class="ending-hero" src="img/ending_male.png" alt="hero" />
+        </div>
+
+        <!-- Step 2: 어두워지고 대사 등장 -->
+        <div class="ending-step step2">
+            <div class="ending-dark-overlay"></div>
+            <div class="ending-dialogue-box">
                 <div class="ending-dialogue-text">마왕: …후후, 결국 여기까지 왔구나.</div>
                 <div class="ending-buttons">
                     <button class="ending-button next">다음</button>
                     <button class="ending-button skip">건너뛰기</button>
-                  </div>
                 </div>
             </div>
-            <!-- Step 3: 밝아지고 용 등장 -->
-            <div class="ending-step step3">
-              <img class="ending-demonking" src="Img/demon_king.png" alt="demon_king" />
-              <img class="ending-hero" src="Img/ending_male.png" alt="hero" />
-              <img class="ending-dragon" src="Img/ending_dragon.png" alt="dragon" />
-            </div>
-            <!-- Step 4: 다시 어두워지고 마지막 대사 -->
-            <div class="ending-step step4">
-              <div class="ending-dark-overlay"></div>
-              <div class="ending-dialogue-box">
-                <div class="ending-dialogue-text">마왕: 그 실습들이… 용… 준비됐지?</div>
-              </div>
-              <div class="ending-buttons">
-                <button class="ending-button next">다음</button>
-                <button class="ending-button skip">건너뛰기</button>
-              </div>
-            </div>
         </div>
-        <!--엔딩크레딧화면-->
-        <div class="endingcredit-wrapper">
-          <div class="ending-credit-screen">
-            <div class="ending-credit-text">The End</div>
-          </div>
+
+        <!-- Step 3: 밝아지고 용 등장 -->
+        <div class="ending-step step3">
+            <img class="ending-demonking" src="img/demon_king.png" alt="demon_king" />
+            <img class="ending-hero" src="img/ending_male.png" alt="hero" />
+            <img class="ending-dragon" src="img/ending_dragon.png" alt="dragon" />
+        </div>
+
+        <!-- Step 4: 다시 어두워지고 마지막 대사 -->
+        <div class="ending-step step4">
+            <div class="ending-dark-overlay"></div>
+            <div class="ending-dialogue-box">
+                <div class="ending-dialogue-text">마왕: 그 실습들이… 용… 준비됐지?</div>
+                <div class="ending-buttons">
+                    <button class="ending-button next">다음</button>
+                    <button class="ending-button skip">건너뛰기</button>
+                </div>
+            </div>
         </div>
     </div>
+
+    <!-- 엔딩 크레딧 화면 -->
+    <div class="endingcredit-wrapper">
+        <div class="ending-credit-screen">
+            <div class="ending-credit-text">The End</div>
+        </div>
+    </div>
+
+</div> <!-- main-wrapper 끝 -->
+<!-- 퀴즈 모달 (body 하단에 위치) -->
+<div id="quizModal" style="display:none;">
+    <div class="quiz-close-btn" id="quizCloseBtn">&times;</div>
+    <div class="quiz-title" id="quizTitle">CSS 퀴즈</div>
+    <div class="quiz-content">
+        <div class="quiz-question" id="quizQuestion">문제 텍스트</div>
+        <div class="quiz-options">
+            <button class="quiz-option" id="quizOption0"></button>
+            <button class="quiz-option" id="quizOption1"></button>
+            <button class="quiz-option" id="quizOption2"></button>
+            <button class="quiz-option" id="quizOption3"></button>
+        </div>
+    </div>
+    <div class="quiz-result" id="quizResult" style="display:none;">
+        <div class="result-text" id="resultText"></div>
+        <div class="result-explanation" id="resultExplanation"></div>
+        <button class="quiz-done-btn" id="quizDoneBtn">완료</button>
+    </div>
+</div>
 </body>
 </html>
