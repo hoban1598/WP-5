@@ -104,147 +104,35 @@
         </div>
         <!--게임화면-->
         <div class="game-wrapper">
-            <!-- 우측 상단 게임 정보 패널(ui) -->
-            <div id="game-info">
-              <div class="info-top">
-                <div class="info-box" id="score">
-                  <img src="Img/star.png" alt="점수" class="info-icon" /> 점수: 0
-                </div>
-                <div class="info-box" id="lives">
-                  <img src="Img/heart.png" alt="목숨" class="info-icon" />
-                  <span class="life-container">
-                    <img src="Img/heart.png" alt="life" class="life-heart">
-                    <img src="Img/heart.png" alt="life" class="life-heart">
-                    <img src="Img/heart.png" alt="life" class="life-heart">
-                  </span>
-                </div>
-                <div class="info-box" id="timer">
-                  <img src="Img/clock.png" alt="타이머" class="info-icon" /> 10:00
-                </div>
-              </div>
-              <div class="info-bottom">
-                <div class="info-box" id="stage"></div>
-                <div class="info-box" id="equipment">장비 : 0/3</div>
-                <button id="backToSetup" class="back-btn">초기설정으로</button>
-              </div>
+          <!-- 게임 HUD 영역 -->
+          <div class="game-hud">
+            <div class="hud-box score">
+                <img class="star-img" src="Img/star.png" alt="star">
+                <div class="hud-label">점수</div>
             </div>
-             <!--스테이지 1-->
-            <div id="stage1" class="game-stage">
-              <div class="stage-background">
-                <div class="brick-row">
-                  <div class="brick quiz">HTML</div>
-                  <div class="brick normal"></div>
-                  <div class="brick quiz">CSS</div>
-                  <div class="brick normal"></div>
-                  <div class="brick normal"></div>
-                  <div class="brick normal"></div>
-                  <div class="brick normal"></div>
-                </div>
-                <div class="brick-row">
-                  <div class="brick quiz">CSS</div>
-                  <div class="brick normal"></div>
-                  <div class="brick normal"></div>
-                  <div class="brick normal"></div>
-                  <div class="brick normal"></div>
-                  <div class="brick quiz">HTML</div>
-                  <div class="brick normal"></div>
-                </div>
-                <div class="brick-row">
-                  <div class="brick normal"></div>
-                  <div class="brick quiz">HTML</div>
-                  <div class="brick normal"></div>
-                  <div class="brick normal"></div>
-                  <div class="brick quiz">CSS</div>
-                  <div class="brick normal"></div>
-                  <div class="brick quiz">HTML</div>
-                </div>
-                <canvas id="gameCanvas1" width="720" height="580"></canvas>
-              </div>
+            <div class="hud-box life">
+              <img class="heart-img" src="Img/heart.png" alt="heart">
+              <img class="heart-img" src="Img/heart.png" alt="heart">
+              <img class="heart-img" src="Img/heart.png" alt="heart">
             </div>
-            <!--스테이지 2-->
-            <div id="stage2" class="game-stage">
-              <div class="stage2-background">
-                <div class="brick-row">
-                  <div class="brick normal"></div>
-                  <div class="brick quiz">JS</div>
-                  <div class="brick normal"></div>
-                  <div class="brick quiz">JS</div>
-                  <div class="brick normal"></div>
-                  <div class="brick quiz">JS</div>
-                  <div class="brick normal"></div>
-                </div>
-                <div class="brick-row">
-                  <div class="brick quiz">JS</div>
-                  <div class="brick normal"></div>
-                  <div class="brick normal"></div>
-                  <div class="brick normal"></div>
-                  <div class="brick quiz">JS</div>
-                  <div class="brick normal"></div>
-                  <div class="brick normal"></div>
-                </div>
-                <div class="brick-row">
-                  <div class="brick normal"></div>
-                  <div class="brick normal"></div>
-                  <div class="brick quiz">JS</div>
-                  <div class="brick normal"></div>
-                  <div class="brick normal"></div>
-                  <div class="brick quiz">JS</div>
-                  <div class="brick normal"></div>
-                </div>
-                <div class="brick-row">
-                  <div class="brick normal"></div>
-                  <div class="brick quiz">JS</div>
-                  <div class="brick normal"></div>
-                  <div class="brick normal"></div>
-                  <div class="brick quiz">JS</div>
-                  <div class="brick normal"></div>
-                  <div class="brick quiz">JS</div>
-                </div>
-                <canvas id="gameCanvas2" width="720" height="580"></canvas>
-              </div>
+            <div class="hud-box time">
+                <img class="clock-img" src="Img/clock.png" alt="clock">
+                <div class="hud-label time-text">10:00</div>
             </div>
-            <!--스테이지 3-->
-            <div id="stage3" class="game-stage">
-              <div class="stage3-background">
-                <div class="brick-row">
-                  <div class="brick normal"></div>
-                  <div class="brick quiz">jQuery</div>
-                  <div class="brick normal"></div>
-                  <div class="brick quiz">jQuery</div>
-                  <div class="brick normal"></div>
-                  <div class="brick quiz">jQuery</div>
-                  <div class="brick normal"></div>
-                </div>
-                <div class="brick-row">
-                  <div class="brick quiz">jQuery</div>
-                  <div class="brick normal"></div>
-                  <div class="brick normal"></div>
-                  <div class="brick normal"></div>
-                  <div class="brick quiz">jQuery</div>
-                  <div class="brick normal"></div>
-                  <div class="brick normal"></div>
-                </div>
-                <div class="brick-row">
-                  <div class="brick normal"></div>
-                  <div class="brick normal"></div>
-                  <div class="brick quiz">jQuery</div>
-                  <div class="brick normal"></div>
-                  <div class="brick normal"></div>
-                  <div class="brick quiz">jQuery</div>
-                  <div class="brick normal"></div>
-                </div>
-                <div class="brick-row">
-                  <div class="brick normal"></div>
-                  <div class="brick quiz">jQuery</div>
-                  <div class="brick normal"></div>
-                  <div class="brick normal"></div>
-                  <div class="brick quiz">jQuery</div>
-                  <div class="brick normal"></div>
-                  <div class="brick quiz">jQuery</div>
-                </div>
-                <canvas id="gameCanvas3" width="720" height="580"></canvas>
-              </div>
+            <div class="hud-box stage">
+              <div class="hud-label">Stage1</div>
             </div>
+            <div class="hud-box equipment">
+              <div class="hud-label">장비 : 0/3</div>
+            </div>
+          </div>
+          <!-- 게임 플레이 영역 -->
+          <div class="game-stage">
+            <div class="brick-area"></div> <!-- 벽돌 생성 위치 -->
+            <div class="stage-bar"></div>  <!-- 하단 바 (검은색 막대) -->
+            <img id="character" class="game-character" src="Img/male.png" alt="character">
+            <img id="pet" class="game-pet" src="Img/blue.png" alt="pet">
+          </div>
         </div>
         <!-- 퀴즈 팝업 화면 -->
         <div id="quizModal">

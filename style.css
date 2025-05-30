@@ -508,22 +508,165 @@ button.start-button-wrapper:hover {
 /* ============================= */
 /* 게임 실행 화면 */
 /* ============================= */
-/*스테이지 공통배경화면 적용(Img/stage.png)과 공통 ui인 목숨(Img/heart.png),점수(Img/star.png),제한시간(Img/clock.png),스테이지이름,초기설정화면버튼 그리고 게임캔버스 관련 css스타일*/
+
+/* 스테이지화면 */
+.game-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  z-index: 10;
+  background-image: url("Img/stage.png");
+  background-size: cover;
+  background-position: center;
+}
+
+/* 캐릭터(패들)과 펫(공) */
+#character {
+  width: 48px;
+  height: 48px;
+  position: absolute;
+  left: 50%;
+  top: 87%;
+  transform: translateX(-50%);
+  z-index: 11;
+}
+
+#pet {
+  width: 30px;
+  height: 30px;
+  position: absolute;
+  left: 50%;
+  top: 82%;
+  transform: translateX(-50%);
+  z-index: 12;
+}
+
+.ball {
+  width: 30px;
+  height: 30px;
+  position: absolute;
+  z-index: 12;
+}
+
+.paddle {
+  width: 48px;
+  height: 48px;
+  position: absolute;
+  z-index: 11;
+}
+
+/* 벽돌게임 영역과 벽돌과 퀴즈벽돌 */
+.game-stage {
+  width: 37.5vw; /* 약 720px on 1920px */
+  height: 53.7vh; /* 약 580px on 1080px */
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid white;
+  position: absolute;
+  left: 50%;
+  top: 10%;
+  transform: translateX(-50%);
+  overflow: hidden;
+}
+
+.brick-area {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 85%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-content: flex-start;
+  gap: 12px 10px;
+  padding-top: 20px;
+  box-sizing: border-box;
+}
+
+.brick {
+  width: 88px;
+  height: 24px;
+  line-height: 24px;
+  text-align: center;
+  color: white;
+  font-size: 14px;
+  font-weight: 700;
+  border-radius: 4px;
+  background-color: gray;
+}
+
+.stage-bar {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 156px;
+  height: 19px;
+  background: #1D2930;
+  border: 1px solid #324042;
+}
+
+/* 우측 상단 ui(HUD) */
+/* 게임 HUD 2행 배치 구조 (점수/하트/시간 → 상단, 스테이지/장비 → 하단) */
+.game-hud {
+  position: absolute;
+  top: 2vh;
+  right: 1.5vw;
+  width: 360px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: auto auto;
+  gap: 8px;
+  z-index: 15;
+  justify-items: center;
+}
+
+
+.hud-box:nth-child(4) {
+  grid-column: span 1;
+  justify-self: center;
+  margin-right: 12px;
+}
+
+.hud-box:nth-child(5) {
+  grid-column: span 1;
+  justify-self: center;
+}
+
+.hud-box {
+  width: 110px;
+  height: 36px;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 10px;
+  outline: 1px solid #324042;
+  outline-offset: -1px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-family: "Noto Sans";
+  font-weight: 700;
+  font-size: 14px;
+  flex-shrink: 0;
+  text-align: center;
+}
+
+.hud-label {
+  z-index: 2;
+}
+
+.star-img,
+.clock-img,
+.heart-img {
+  width: 20px;
+  height: 20px;
+  margin-right: 6px;
+}
 
 /* ============================= */
-/* Stage 1 - 벽돌 UI 스타일 */
-/* ============================= */
-/* ============================= */
-
-/* ============================= */
-/* Stage 2 - 벽돌 UI 스타일 */
-/* ============================= */
-
-
-/* ============================= */
-/* Stage 3 - 벽돌 UI 스타일 */
-/* ============================= */
-
 /* ============================= */
 /* 퀴즈 팝업 화면 */
 /* ============================= */
@@ -745,7 +888,7 @@ button.start-button-wrapper:hover {
   left: 0;
   width: 100vw;
   height: 100vh;
-  background-image: url(https://placehold.co/1920x1080);
+  background-image: url(Img/ending-credit.png);
   background-size: cover;
   background-position: center;
   overflow: hidden;
