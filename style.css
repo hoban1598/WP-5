@@ -509,104 +509,31 @@ button.start-button-wrapper:hover {
 /* 게임 실행 화면 */
 /* ============================= */
 
-/* 스테이지화면 */
+/* 전체 게임 화면*/
 .game-wrapper {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  display: block;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
   z-index: 10;
   background-image: url("Img/stage.png");
   background-size: cover;
   background-position: center;
 }
 
-/* 캐릭터(패들)과 펫(공) */
-#character {
-  width: 48px;
-  height: 48px;
-  position: absolute;
-  left: 50%;
-  top: 87%;
-  transform: translateX(-50%);
-  z-index: 11;
-}
-
-#pet {
-  width: 30px;
-  height: 30px;
-  position: absolute;
-  left: 50%;
-  top: 82%;
-  transform: translateX(-50%);
-  z-index: 12;
-}
-
-.ball {
-  width: 30px;
-  height: 30px;
-  position: absolute;
-  z-index: 12;
-}
-
-.paddle {
-  width: 48px;
-  height: 48px;
-  position: absolute;
-  z-index: 11;
-}
-
 /* 벽돌게임 영역과 벽돌과 퀴즈벽돌 */
-.game-stage {
-  width: 37.5vw; /* 약 720px on 1920px */
-  height: 53.7vh; /* 약 580px on 1080px */
+#gameCanvas {
+  width: calc(100vh * 0.6666); /* 720 / 1080 ≈ 0.6666 */
+  height: calc(100vh * 0.537); /* 580 / 1080 ≈ 0.537 */
+  max-width: 720px;
+  max-height: 580px;
   background: rgba(0, 0, 0, 0.5);
   border: 1px solid white;
-  position: absolute;
-  left: 50%;
-  top: 10%;
-  transform: translateX(-50%);
-  overflow: hidden;
-}
-
-.brick-area {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 85%;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-content: flex-start;
-  gap: 12px 10px;
-  padding-top: 20px;
-  box-sizing: border-box;
-}
-
-.brick {
-  width: 88px;
-  height: 24px;
-  line-height: 24px;
-  text-align: center;
-  color: white;
-  font-size: 14px;
-  font-weight: 700;
-  border-radius: 4px;
-  background-color: gray;
-}
-
-.stage-bar {
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 156px;
-  height: 19px;
-  background: #1D2930;
-  border: 1px solid #324042;
+  display: block;
 }
 
 /* 우측 상단 ui(HUD) */

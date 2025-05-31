@@ -79,22 +79,22 @@
             </div>
             <div class="bgm-label">배경음악 설정</div>
             <div class="bgm-select">
-                <button class="bgm-option">
+                <button class="bgm-option" data-bgm="sound/background-a.mp3">
                     <div class="bgm-option-text">A</div>
                 </button>
-                <button class="bgm-option">
+                <button class="bgm-option" data-bgm="sound/background-b.mp3">
                     <div class="bgm-option-text">B</div>
                 </button>
             </div>
             <div class="stage-label">스테이지 선택 (난이도)</div>
             <div class="stage-select">
-                <button class="stage-button">
+                <button class="stage-button" data-stage="1">
                     <div class="stage-button-text">Stage1</div>
                 </button>
-                <button class="stage-button">
+                <button class="stage-button" data-stage="2">
                     <div class="stage-button-text">Stage2</div>
                 </button>
-                <button class="stage-button">
+                <button class="stage-button" data-stage="3">
                     <div class="stage-button-text">Stage3</div>
                 </button>
             </div>
@@ -120,18 +120,15 @@
                 <div class="hud-label time-text">10:00</div>
             </div>
             <div class="hud-box stage">
-              <div class="hud-label">Stage1</div>
+              <div class="hud-label" id="stage-label">Stage1</div>
             </div>
             <div class="hud-box equipment">
               <div class="hud-label">장비 : 0/3</div>
             </div>
           </div>
           <!-- 게임 플레이 영역 -->
-          <div class="game-stage">
-            <div class="brick-area"></div> <!-- 벽돌 생성 위치 -->
-            <div class="stage-bar"></div>  <!-- 하단 바 (검은색 막대) -->
-            <img id="character" class="game-character" src="Img/male.png" alt="character">
-            <img id="pet" class="game-pet" src="Img/blue.png" alt="pet">
+          <div class="game-stage">  
+            <canvas id="gameCanvas" width="800" height="600"></canvas>
           </div>
         </div>
         <!-- 퀴즈 팝업 화면 -->

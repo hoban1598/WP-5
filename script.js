@@ -1,3 +1,20 @@
+// ======= 캔버스 게임 글로벌 변수 선언 =======
+let canvas, ctx;
+let ball, paddle;
+let bricks = [];
+// 선택된 스테이지를 저장하는 전역 변수
+let currentStage = 1;
+let lives = 3;
+let score = 0;
+let animationId;
+let selectedQuizLabels = [];
+// 각 스테이지별 퀴즈 라벨 정의
+const QUIZ_LABELS_BY_STAGE = {
+  1: ['HTML', 'CSS'],
+  2: ['JS'],
+  3: ['jQuery']
+};
+
 $(document).ready(function () {
   // 화면 초기화: 시작화면만 보이게, 나머지는 숨김
   $('.start').show();                    // 시작화면만 보여줌
@@ -47,495 +64,432 @@ $(document).ready(function () {
   });
 
   // 3. 초기 설정 화면
-  // Replace certain .div buttons with <button> inside .setup-wrapper
-  (function convertDivsToButtons() {
-    const selectors = [
-      '.character-button',
-      '.pet-button',
-      '.bgm-button',
-      '.stage-btn',
-      '.setting-start-button'
-    ];
-    const $setup = $('.setup-wrapper');
-    selectors.forEach(selector => {
-      $setup.find(selector).each(function () {
-        if (this.tagName.toLowerCase() === 'div') {
-          const $old = $(this);
-          const $button = $('<button>');
-          $.each(this.attributes, function () {
-            $button.attr(this.name, this.value);
-          });
-          $button.html($old.html());
-          $old.replaceWith($button);
-        }
-      });
-    });
-  })();
-
   // 버튼 선택 효과 로직
   function setupSelectionHandlers() {
-    const groups = [
-      { selector: '.character-card' },
-      { selector: '.pet-option' },
-      { selector: '.bgm-option' },
-      { selector: '.stage-button' }
+    const selectors = [
+      '.character-card',
+      '.pet-option',
+      '.bgm-option',
+      '.stage-button'
     ];
 
-    groups.forEach(group => {
-      $(document).on('click', group.selector, function () {
-        // 같은 그룹 내 다른 선택 해제
-        $(group.selector).removeClass('selected');
-        // 현재 클릭한 요소 선택
+    selectors.forEach(selector => {
+      $('.setup-wrapper').on('click', selector, function () {
+        $(this).parent().find(selector).removeClass('selected');
         $(this).addClass('selected');
       });
     });
   }
-
-  // 4. 게임실행화면
-  // 공, 패들, 캐릭터, 펫 초기 배치
-  function initGameObjects() {
-    const $gameArea = $('.brick-area');
-    // Ensure .brick-area is position: relative for absolute children and set height
-    $gameArea.css({ position: 'relative', top: 0, height: '400px' });
-
-    // Ball: ensure only one and always positioned and styled
-    const ball = $('#ball');
-    if (ball.length === 0) {
-      $gameArea.append('<div id="ball" class="ball"></div>');
-    } else {
-      ball.appendTo($gameArea);
-    }
-    // 공 위치를 brick-area 안의 적절한 위치(아래쪽이 아님)로 조정
-    // 위치 지정만 남김, 스타일은 CSS로
-    $('#ball').css({ top: 480, left: 200 });
-
-    // Paddle: 실제 캐릭터가 포함된 패들이 있다면 해당 요소를 id="paddle"로 변경
-    let paddle = $('#paddle');
-    if (paddle.length === 0) {
-      const $character = $('.game-character');
-      if ($character.length && $character.parent().attr('id') !== 'paddle') {
-        const $paddleWrapper = $('<div id="paddle" class="paddle"></div>');
-        $character.wrap($paddleWrapper);
-        paddle = $('#paddle');
-      } else {
-        $gameArea.append('<div id="paddle" class="paddle"></div>');
-        paddle = $('#paddle');
-      }
-    } else {
-      paddle.appendTo($gameArea);
-    }
-    // 패들 위치만 지정, 스타일은 CSS로
-    paddle.css({
-      bottom: '20px',
-      left: '200px'
-    });
-
-    if ($('#character').length === 0) {
-      $gameArea.append('<img id="character" class="character" src="">');
-    }
-    if ($('#pet').length === 0) {
-      $gameArea.append('<img id="pet" class="pet" src="">');
-    }
-  }
-
-  // 펫이 공을 따라다니게 하는 로직
-  function syncPetWithBall() {
-    const ball = $('#ball');
-    const pet = $('#pet');
-    if (ball.length && pet.length) {
-      const ballPos = ball.position();
-      pet.css({
-        top: ballPos.top + 10,
-        left: ballPos.left + 10
-      });
-    }
-  }
-  setInterval(syncPetWithBall, 50);
-
-  // 선택한 캐릭터, 펫, 스테이지, BGM 적용
-  function applySettingsToGame() {
-    const selectedCharacter = $('.character-card.selected img').attr('src');
-    const selectedPet = $('.pet-option.selected img').attr('src');
-    let selectedStage = $('.stage-button.selected .stage-button-text').text().trim();
-    const selectedBgm = $('.bgm-option.selected').data('bgm');
-
-    $('#character').attr('src', selectedCharacter);
-    $('#pet').attr('src', selectedPet);
-    $('#stageName').text(selectedStage);
-    if (selectedBgm) {
-      const bgmAudio = new Audio(selectedBgm);
-      bgmAudio.loop = true;
-      bgmAudio.play();
-    }
-    // 퀴즈 벽돌 색깔 설정 (HTML, CSS, JS 각각)
-    $('.quiz-brick').each(function () {
-      const type = $(this).data('quiz-type');
-      if (type === 'html') {
-        $(this).css('background-color', '#E34F26'); // HTML: 오렌지
-      } else if (type === 'css') {
-        $(this).css('background-color', '#2965F1'); // CSS: 파랑
-      } else if (type === 'js') {
-        $(this).css('background-color', '#F7DF1E'); // JS: 노랑
-      }
-    });
-    // .stage-button.selected에 data-stage 속성 부여
-    selectedStage = $('.stage-button.selected .stage-button-text').text().trim();
-    const stageNum = selectedStage.replace('Stage', '');
-    $('.stage-button.selected').attr('data-stage', stageNum);
-  }
-
-  // 선택한 스테이지에 따라 벽돌을 동적으로 생성하는 함수
-  // - 30% 확률로 퀴즈 벽돌 생성
-  // - 나머지는 일반 벽돌
-  function createBricks(stage) {
-    const $area = $('.brick-area');
-    $area.empty();
-
-    // 퀴즈 타입 스테이지별로 다르게
-    let quizTypes = [];
-    if (stage === 'Stage1') quizTypes = ['html', 'css'];
-    else if (stage === 'Stage2') quizTypes = ['css', 'js'];
-    else if (stage === 'Stage3') quizTypes = ['html', 'css', 'js'];
-    else quizTypes = ['html', 'css', 'js'];
-
-    // 벽돌 행/열 및 크기
-    const rows = 5;
-    const cols = 7;
-    let totalBricks = rows * cols;
-    let brickIndex = 0;
-    for (let row = 0; row < rows; row++) {
-      for (let col = 0; col < cols; col++) {
-        const isQuiz = Math.random() < 0.3;
-        const brickClass = isQuiz ? 'quiz-brick' : 'normal-brick';
-        const brickText = isQuiz ? '퀴즈' : '';
-        // 수정: quizType을 무작위로 할당
-        const quizType = isQuiz ? quizTypes[Math.floor(Math.random() * quizTypes.length)] : '';
-        const $brick = $('<div>')
-          .addClass('brick')
-          .addClass(brickClass)
-          .attr('data-quiz-type', isQuiz ? quizType : '')
-          .text(brickText)
-          .css({
-            top: `${row * 35}px`,
-            left: `${col * 90}px`
-          });
-        $area.append($brick);
-        brickIndex++;
-      }
-    }
-    // 퀴즈 벽돌 색상 적용
-    $('.quiz-brick').each(function () {
-      const type = $(this).data('quiz-type');
-      if (type === 'html') {
-        $(this).css('background-color', '#E34F26');
-      } else if (type === 'css') {
-        $(this).css('background-color', '#2965F1');
-      } else if (type === 'js') {
-        $(this).css('background-color', '#F7DF1E');
-      }
-    });
-
-    bricksLeft = totalBricks; // 생성된 벽돌 개수로 초기화
-
-    // 벽돌 수 0이 되면 바로 클리어 처리할 수 있도록 이벤트 바인딩 초기화
-    $('.brick').off('removed').on('removed', function () {
-      bricksLeft--;
-      if (bricksLeft === 0) {
-        const currentStage = parseInt($('.stage-button.selected').data('stage'));
-        showItemPopup(currentStage); // 장비 획득 팝업 표시
-        if (currentStage === 3) {
-          setTimeout(() => {
-            $('.game-wrapper').fadeOut(300, function () {
-              $('.ending-wrapper').fadeIn(300);
-              startEndingSequence();
-            });
-          }, 2000);
-        }
-      }
-    });
-  }
-
-  const quizQuestions = {
-    html: 'HTML에서 문서의 구조를 정의하는 태그는?',
-    css: 'CSS에서 색상을 지정하는 속성은?',
-    js: 'JavaScript에서 함수를 선언하는 키워드는?'
-  };
-
-
+  // 버튼 선택 핸들러 실행
   setupSelectionHandlers();
 
-  // 공 움직임 시작 함수
-  // 공의 초기 속도 설정 및 움직임 시작
-  function startBallMovement() {
-    const $area = $('.brick-area');
-    let ball = $('#ball');
-    if (!ball.length) {
-      console.warn("Ball element not found - attempting to re-initialize");
-      initGameObjects(); // 재초기화 시도
-      ball = $('#ball'); // 다시 시도
-      if (!ball.length) return;
-    }
-    // .brick-area 안에 있는지 확인 후 필요할 때만 append
-    if (!$.contains($area[0], ball[0])) {
-      ball.appendTo($area);
-    }
-    // 공 위치 및 속도 초기화 (.brick-area 기준)
-    ball.css({ left: 200, top: 420 });
-    let dx = 3;
-    let dy = -3;
-    window.ballVelocity = { dx, dy }; // 속도를 전역 변수로 설정
-
-    // Paddle 관련 처리: 패들이 .brick-area에 없으면 append
-    let paddle = $('#paddle');
-    const $gameArea = $('.brick-area');
-    if (paddle.length === 0) {
-      const $character = $('.game-character');
-      if ($character.length && $character.parent().attr('id') !== 'paddle') {
-        const $paddleWrapper = $('<div id="paddle" class="paddle"></div>');
-        $character.wrap($paddleWrapper);
-        paddle = $('#paddle');
-      } else {
-        $gameArea.append('<div id="paddle" class="paddle"></div>');
-        paddle = $('#paddle');
-      }
-    }
-    if (!$.contains($gameArea[0], paddle[0])) {
-      paddle.appendTo($gameArea);
-    }
-
-    function moveBall() {
-      // ball 객체가 변할 수 있으므로 매번 새로 가져옴
-      let ball = $('#ball');
-      if (ball.length === 0) return;
-      const ballPos = ball.position();
-      if (!ballPos || typeof ballPos.left === 'undefined' || typeof ballPos.top === 'undefined') return;
-      const ballWidth = ball.outerWidth();
-      const ballHeight = ball.outerHeight();
-      const areaWidth = $('.brick-area').width();
-      const areaHeight = $('.brick-area').height();
-
-      // 속도 불러오기 (window.ballVelocity가 항상 최신값을 가짐)
-      let dx = window.ballVelocity.dx;
-      let dy = window.ballVelocity.dy;
-
-      // 공 위치 갱신
-      let newX = ballPos.left + dx;
-      let newY = ballPos.top + dy;
-      // 콘솔 로그 추가
-      console.log("Moving ball", newX, newY);
-
-      // 벽과 충돌 검사 및 방향 전환
-      if (newX <= 0 || newX + ballWidth >= areaWidth) {
-        dx = -dx;
-      }
-      if (newY <= 0) {
-        dy = -dy;
-      }
-      if (newY + ballHeight >= areaHeight) {
-        // 바닥에 닿으면 목숨 감소 및 공 위치 초기화
-        decreaseLife();
-        newX = areaWidth / 2;
-        newY = areaHeight / 2;
-        dx = 3;
-        dy = -3;
-      }
-
-      ball.css({ left: newX, top: newY });
-
-      // 속도 갱신
-      window.ballVelocity.dx = dx;
-      window.ballVelocity.dy = dy;
-
-      checkCollision(ball, dx, dy);
-    }
-
-    setInterval(moveBall, 20);
-  }
-  // 마우스 움직임에 따라 패들이 따라다니는 로직
-  $(document).on('mousemove', function (e) {
-    const $paddle = $('#paddle');
-    const $gameArea = $('.brick-area');
-    // .brick-area가 DOM에 존재할 때만 처리, #paddle만 대상으로 고정
-    if ($gameArea.length === 0 || $paddle.length === 0) return;
-    // 콘솔 로그 추가
-    console.log("Paddle exists?", $paddle.length, "GameArea exists?", $gameArea.length);
-    const gameOffset = $gameArea.offset();
-    if (!gameOffset) return;
-    const mouseX = e.pageX - gameOffset.left;
-    const newLeft = Math.min(
-      Math.max(mouseX - $paddle.width() / 2, 0),
-      $gameArea.width() - $paddle.width()
-    );
-    $paddle.css('left', newLeft);
-  });
-  // 공과 벽돌, 패들 충돌 체크 함수
-  // 충돌 시 공 방향 변경 및 점수 처리
-  function checkCollision(ball, dx, dy) {
-    const ballPos = ball.position();
-    const ballWidth = ball.outerWidth();
-    const ballHeight = ball.outerHeight();
-
-    // 패들 충돌 체크
-    const paddle = $('#paddle');
-    if (paddle.length) {
-      const paddlePos = paddle.position();
-      const paddleWidth = paddle.outerWidth();
-      const paddleHeight = paddle.outerHeight();
-
-      if (
-        ballPos.top + ballHeight >= paddlePos.top &&
-        ballPos.top <= paddlePos.top + paddleHeight &&
-        ballPos.left + ballWidth >= paddlePos.left &&
-        ballPos.left <= paddlePos.left + paddleWidth
-      ) {
-        dy = -dy;
-        window.ballVelocity.dy = dy;
-      }
-    }
-
-    // 벽돌 충돌 체크
-    $('.brick').each(function () {
-      const $brick = $(this);
-      const brickPos = $brick.position();
-      const brickWidth = $brick.outerWidth();
-      const brickHeight = $brick.outerHeight();
-
-      if (
-        ballPos.left + ballWidth > brickPos.left &&
-        ballPos.left < brickPos.left + brickWidth &&
-        ballPos.top + ballHeight > brickPos.top &&
-        ballPos.top < brickPos.top + brickHeight
-      ) {
-        // 충돌 시 벽돌 제거 및 점수 처리
-        const isQuiz = $brick.hasClass('quiz-brick');
-        if (isQuiz) {
-          const quizType = $brick.data('quiz-type');
-          const question = quizQuestions[quizType] || '퀴즈';
-          $('#quizQuestion').text(question);
-          $('#quizModal').fadeIn(200);
-        }
-        $brick.remove().trigger('removed');
-        hitBrick(isQuiz);
-        dy = -dy; // 방향 반전
-        window.ballVelocity.dy = dy;
-        return false; // each 루프 종료
-      }
-    });
-  }
-
-  // 설정화면에서 게임 시작 버튼 클릭 시 실행되는 주요 게임 초기화 로직
-  // - 설정값 적용, 벽돌 생성, 타이머 시작, 공 움직임 시작
-  // - 설정화면 → 게임화면 전환
+  // "게임시작" 버튼 클릭 시 검증 및 게임 화면 전환
   $('.setting-start-button').on('click', function () {
-    initGameObjects();
-    applySettingsToGame();
-    const selectedStage = $('.stage-button.selected .stage-button-text').text().trim();
-    createBricks(selectedStage);
-    startTimer();
-    startBallMovement(); // 공 움직임 시작
+    const characterSelected = $('.character-card.selected').length > 0;
+    const petSelected = $('.pet-option.selected').length > 0;
+    const bgmSelected = $('.bgm-option.selected').length > 0;
+    const stageSelected = $('.stage-button.selected').length > 0;
+
+    if (!characterSelected || !petSelected || !bgmSelected || !stageSelected) {
+      let missing = [];
+      if (!characterSelected) missing.push("캐릭터");
+      if (!petSelected) missing.push("펫");
+      if (!bgmSelected) missing.push("배경음악");
+      if (!stageSelected) missing.push("스테이지");
+      alert(`${missing.join(', ')}을(를) 선택해야 합니다.`);
+      return;
+    }
+
+    // 선택된 스테이지 번호를 현재 스테이지로 저장
+    currentStage = getSelectedStage();
+
     $('.setup-wrapper').fadeOut(300, function () {
       $('.game-wrapper').fadeIn(300);
+      // 캔버스 크기 조정 후 게임을 초기화
+      resizeCanvas();
+      initCanvasGame(); // 게임 시작 함수
     });
   });
 
-  // 점수 로직
-  let score = 0;
-  function updateScore(value) {
-    score += value;
-    $('#score').text(score);
+  //4.게임실행화면
+  // ========== 선택된 캐릭터 이미지 가져오기 ==========
+  function getSelectedCharacterImage() {
+    const selectedCharacter = $('.character-card.selected img').attr('src');
+    return selectedCharacter || 'default-character.png'; // 기본 이미지
   }
-
-  // 목숨 줄어드는 함수 (하트 이미지가 하나씩 제거됨)
-  // - 마지막 하트가 제거되면 Game Over 및 페이지 새로고침
-  function decreaseLife() {
-    const hearts = $('.game-hud .life .hud-heart');
-    if (hearts.length > 0) {
-      hearts.last().remove();
-    }
-    if (hearts.length <= 1) {
-      alert('Game Over!');
-      location.reload();
-    }
+  // ========== 선택된 펫 이미지 가져오기 ==========
+  function getSelectedPetImage() {
+    const selectedPet = $('.pet-option.selected img').attr('src');
+    return selectedPet || 'default-pet.png'; // 기본 이미지
   }
+  // ========== 선택된 배경음악 가져오기 ==========
+  function getSelectedBGM() {
+    const selectedBGM = $('.bgm-option.selected').data('bgm');
+    return selectedBGM || 'default-bgm.mp3'; // 기본 BGM
+  }
+  // ========== 선택된 스테이지 정보 가져오기 ==========
+  function getSelectedStage() {
+    const selectedStage = $('.stage-button.selected').data('stage');
+    return selectedStage || 1;
+  }
+  // 전역 함수로 분리 (최상단에서 선언)
 
-  // 제한시간 타이머 작동 함수
-  // - 스테이지별 시간: 1=10분, 2=7분, 3=5분
-  // - 시간 종료 시 게임 종료
-  let timeLeft = 60;
-  function startTimer() {
-    const selectedStage = $('.stage-button.selected .stage-button-text').text().trim();
-    if (selectedStage === 'Stage1') timeLeft = 600;
-    else if (selectedStage === 'Stage2') timeLeft = 420;
-    else if (selectedStage === 'Stage3') timeLeft = 300;
-    else timeLeft = 300;
+  // [스테이지 퀴즈 라벨 설정 함수]
+  function getQuizLabelForStage() {
+    return selectedQuizLabels[Math.floor(Math.random() * selectedQuizLabels.length)];
+  }
+  // ========== 배경음악 재생 ==========
+  function playSelectedBGM() {
+    const bgmSrc = getSelectedBGM();
+    const audio = new Audio(bgmSrc);
+    audio.loop = true; // 반복 재생
+    audio.play().catch(error => {
+      console.error("배경음악 재생 오류:", error);
+    });
+  }
+  // ========== 게임 시작 시 배경음악 재생 ==========
+  playSelectedBGM();
+  // ========== 게임 시작 시 캔버스 크기 조정 ==========
+    function resizeCanvas() {
+      // 캔버스 크기를 브라우저의 37.5% x 53.7% 크기로 반응형 설정
+      canvas = document.getElementById('gameCanvas');
+      if (!canvas) return; // 캔버스가 없으면 리턴
+      // 캔버스 크기를 윈도우 크기에 맞춤
+      canvas.width = window.innerWidth * 0.375;
+      canvas.height = window.innerHeight * 0.537;
+    }
+  // 윈도우 리사이즈 이벤트 핸들러
+    $(window).on('resize', resizeCanvas);
+  // ========== 캔버스 게임 초기화 ==========
+  function initCanvasGame() {
+    currentStage = getSelectedStage();
+    selectedQuizLabels = QUIZ_LABELS_BY_STAGE[currentStage] || ['???'];
+    // HUD 상단의 Stage 텍스트를 선택된 스테이지에 따라 갱신
+    $('#stage-label').text(`Stage${currentStage}`);
+    // 선택한 스테이지 정보에 따라 HUD의 Stage 텍스트 반영됨
 
-    const timer = setInterval(() => {
-      timeLeft--;
-      const min = Math.floor(timeLeft / 60);
-      const sec = String(timeLeft % 60).padStart(2, '0');
-      $('#timer').text(`${min}:${sec}`);
-      if (timeLeft <= 0) {
-        clearInterval(timer);
-        alert("Time's up!");
-        location.reload();
+    bricks = [];
+    let quizData = [];
+
+    // 1. canvas 요소와 context 불러오기
+    canvas = document.getElementById('gameCanvas');
+    ctx = canvas.getContext('2d');
+
+    // 2. 공 초기화
+    ball = {
+      x: canvas.width / 2,
+      y: canvas.height - 30,
+      radius: 15,
+      dx: 3,
+      dy: -3,
+      image: new Image(),
+    };
+    ball.image.src = getSelectedPetImage();
+
+    // 3. 패들 초기화
+    paddle = {
+      width: 156,
+      height: 19,
+      x: (canvas.width - 156) / 2,
+      y: canvas.height - 64,
+      speed: 7,
+      movingLeft: false,
+      movingRight: false,
+      image: new Image(),
+    };
+    paddle.image.src = getSelectedCharacterImage();
+
+    // 4. 벽돌 생성
+    const rowCount = 5;
+    const brickWidth = 89;
+    const brickHeight = 24;
+    const brickPadding = 0;
+    const offsetTop = 50;
+    // 벽돌들이 좌우 여백 없이 캔버스 전체에 퍼지도록 중앙 정렬 offset 계산
+    const colCount = Math.floor(canvas.width / brickWidth);
+    const totalBrickWidth = colCount * brickWidth + (colCount - 1) * brickPadding;
+    const offsetLeft = (canvas.width - totalBrickWidth) / 2;
+
+    bricks = [];
+
+    for (let c = 0; c < colCount; c++) {
+      bricks[c] = [];
+      for (let r = 0; r < rowCount; r++) {
+        const brickX = c * (brickWidth + brickPadding) + offsetLeft;
+        const brickY = r * (brickHeight + brickPadding) + offsetTop;
+        const isQuizBrick = Math.random() < 0.3;
+        const label = getQuizLabelForStage();
+        bricks[c][r] = {
+          x: brickX,
+          y: brickY,
+          width: brickWidth,
+          height: brickHeight,
+          status: isQuizBrick ? 2 : 1,
+          label: label,
+        };
       }
-    }, 1000);
-  }
-
-  // 벽돌이 깨질 때 호출되는 함수
-  // - 일반 벽돌이면 점수 증가
-  // - 벽돌이 모두 제거되면 스테이지 클리어 처리
-  // - Stage3 클리어 시 엔딩 화면으로 이동
-  let bricksLeft = 10;
-  function hitBrick(isQuiz = false) {
-    if (!isQuiz) updateScore(10); // 일반 벽돌은 점수 10점 획득
-    bricksLeft--; // 남은 벽돌 수 감소
-    if (bricksLeft === 0) {
-      const currentStage = parseInt($('.stage-button.selected').data('stage'));
-      showItemPopup(currentStage); // 장비 획득 팝업 표시
-      if (currentStage === 3) {
-        setTimeout(() => {
-          $('.game-wrapper').fadeOut(300, function () {
-            $('.ending-wrapper').fadeIn(300);
-            startEndingSequence();
-          });
-        }, 2000);
-      }
     }
+    
+    // 5. 퀴즈 데이터 로드
+    loadQuizData();
+
+    // 6. 마우스 이벤트 등록
+    canvas.addEventListener('mousemove', function (e) {
+      const rect = canvas.getBoundingClientRect();
+      const mouseX = e.clientX - rect.left;
+      let newX = mouseX - paddle.width / 2;
+
+      // 정확한 우측 경계까지 허용
+      if (newX < 0) newX = 0;
+      if (newX > canvas.width - paddle.width - 0.5) {
+        newX = canvas.width - paddle.width;
+      }
+
+      paddle.x = newX;
+    });
+
+    // 7. 게임 루프 시작
+    animationId = requestAnimationFrame(draw);
   }
 
-  // (퀴즈 벽돌 클릭 이벤트는 위에서 처리됨)
+  // ========== 퀴즈 데이터 로드 ==========
+  function loadQuizData() {
+    // fetch('quiz.json') 후 quizData 저장
+  }
 
-  // 퀴즈 정답 제출 시 처리 로직
-  // - 정답이면 점수 증가
-  // - 오답이면 목숨 감소
-  // - 팝업 닫기
-  $('#quizSubmit').on('click', function () {
-    const answer = $('input[name="quizOption"]:checked').val();
-    if (answer === 'correct') {
-      updateScore(100);
+  // ========== 그리기 함수들 ==========
+  function draw() {
+    // 공 위치 업데이트
+    moveBall();
+
+    // 캔버스를 깨끗이 지움
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // 벽돌, 공, 패들 그리기
+    drawBricks();
+    drawBall();
+    drawPaddle();
+
+    // 충돌 감지
+    detectCollision();
+
+    // 다음 프레임 요청
+    animationId = requestAnimationFrame(draw);
+  }
+// ========== 공 위치 업데이트 ==========
+  function moveBall() {
+    ball.x += ball.dx;
+    ball.y += ball.dy;
+  }
+// ========== 공 그리기 ==========
+  function drawBall() {
+    if (ball && ball.image.complete) {
+      ctx.drawImage(ball.image, ball.x - 15, ball.y - 15, 30, 30);
     } else {
-      decreaseLife();
+      // fallback: 원형으로 그림
+      ctx.beginPath();
+      ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+      ctx.fillStyle = '#0095DD';
+      ctx.fill();
+      ctx.closePath();
     }
-    $('#quizModal').fadeOut(200);
-  });
+  }
+// ========== 패들 그리기 ==========
+function drawPaddle() {
+  if (paddle) {
+    // Base rectangle
+    ctx.fillStyle = "#1D2930";
+    ctx.fillRect(paddle.x, paddle.y, paddle.width, paddle.height);
 
-  // 스테이지 클리어 시 장비 획득 팝업 출력
-  // - Stage 1~3에 따라 획득 아이템 텍스트 다름
-  function showItemPopup(stage) {
-    let item = '';
-    if (stage === 1) item = '전설의 검';
-    else if (stage === 2) item = '전설의 갑옷';
-    else if (stage === 3) item = '전설의 용';
-    $('#itemText').text(`${item}을(를) 획득했습니다!`);
-    $('#itemModal').fadeIn(300);
+    // Character on top (48x48 centered horizontally)
+    if (paddle.image && paddle.image.complete) {
+      const characterX = paddle.x + (paddle.width - 48) / 2;
+      const characterY = paddle.y - 48;
+      ctx.drawImage(paddle.image, characterX, characterY, 48, 48);
+    }
+  }
+}
+// ========== 벽돌 그리기 ==========
+  function drawBricks() {
+    for (let c = 0; c < bricks.length; c++) {
+      for (let r = 0; r < bricks[c].length; r++) {
+        const brick = bricks[c][r];
+        if (brick.status > 0) {
+          const color = getBrickColor(brick.status, currentStage);
+          ctx.fillStyle = color;
+          ctx.fillRect(brick.x, brick.y, brick.width, brick.height);
+          ctx.strokeStyle = "#222";
+          ctx.strokeRect(brick.x, brick.y, brick.width, brick.height);
+          // 퀴즈 벽돌이면 텍스트 라벨 출력
+          if (brick.status === 2 && brick.label) {
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 12px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(
+              brick.label,
+              brick.x + brick.width / 2,
+              brick.y + brick.height / 2 + 4
+            );
+          }
+          // 각 스테이지별 퀴즈 라벨이 다르게 출력됨 (Stage 1: HTML/CSS, Stage 2: JS, Stage 3: jQuery)
+        }
+      }
+    }
+  }
+// ========== 벽돌 색상 설정 ==========
+// 벽돌의 상태(status)와 스테이지(stage)에 따라 색상 결정
+// 일반 벽돌 색상: #84C669, 퀴즈 벽돌 색상은 stage별로 다름
+function getBrickColor(status, stage) {
+  if (status === 2) {
+    if (stage === 1) return "#FBBF24";
+    if (stage === 2) return "#60A5FA";
+    return "#A52B2B";
+    // Stage 1: #FBBF24, Stage 2: #60A5FA, Stage 3: #A52B2B
+  }
+  return "#84C669"; // 일반 벽돌 
+}
+
+  // ========== 충돌 감지 및 처리 ==========
+  function detectCollision() {
+    // 공이 좌우 벽에 닿으면 x 방향 반전 (벽돌과 동일한 영역 반영)
+    const leftWall = 0;
+    const rightWall = canvas.width;
+    const ballNextX = ball.x + ball.dx;
+    if (ballNextX - 15 < leftWall || ballNextX + 15 > rightWall) {
+      ball.dx = -ball.dx;
+    }
+
+    // 공이 위쪽 벽에 닿으면 y 방향 반전
+    if (ball.y + ball.dy < ball.radius) {
+      ball.dy = -ball.dy;
+    }
+    
+    // 공이 패들과 충돌
+    if (
+      ball.y + ball.dy > paddle.y - paddle.height &&
+      ball.x > paddle.x &&
+      ball.x < paddle.x + paddle.width
+    ) {
+      ball.dy = -ball.dy;
+    }
+
+    // 공이 바닥에 닿으면 목숨 감소
+    if (ball.y + ball.dy > canvas.height - ball.radius) {
+      decreaseLife();
+      resetBallAndPaddle();
+    }
+
+    // 벽돌 충돌 처리
+    for (let c = 0; c < bricks.length; c++) {
+      for (let r = 0; r < bricks[c].length; r++) {
+        const brick = bricks[c][r];
+        if (brick.status > 0) {
+          if (
+            ball.x > brick.x &&
+            ball.x < brick.x + brick.width &&
+            ball.y > brick.y &&
+            ball.y < brick.y + brick.height
+          ) {
+            ball.dy = -ball.dy;
+            if (brick.status === 2) {
+              pauseGame();
+              const quiz = getRandomQuizForStage(currentStage);
+              showQuizModal(quiz);
+            } else {
+              updateScore(100);
+            }
+            brick.status = 0;
+            checkGameOverOrClear();
+          }
+        }
+      }
+    }
   }
 
-  $('#itemClose').on('click', function () {
-    $('#itemModal').fadeOut(300);
-  });
+  // ========== 퀴즈 처리 ==========
+  function showQuizModal(quizObj) {
+    // #quizModal 열기 및 퀴즈 표시
+  }
 
-  // 5. 엔딩 화면
+  function checkAnswer(userAnswer) {
+    // 정답 체크 → 점수 or 목숨 감소
+    // resumeGame()
+  }
+
+  // ========== 게임 상태 관리 ==========
+  function pauseGame() {
+    // cancelAnimationFrame()
+  }
+
+  function resumeGame() {
+    // requestAnimationFrame(draw)
+  }
+
+  // ========== 공과 패들 초기화 ==========
+  function resetBallAndPaddle() {
+    ball.x = canvas.width / 2;
+    ball.y = canvas.height - 30;
+    ball.dx = 3;
+    ball.dy = -3;
+    paddle.x = (canvas.width - paddle.width) / 2;
+  }
+
+  // ========== 게임 종료 또는 클리어 체크 ==========
+  function checkGameOverOrClear() {
+    if (lives <= 0) {
+      alert("Game Over!");
+      cancelAnimationFrame(animationId);
+    } else {
+      let bricksLeft = 0;
+      for (let c = 0; c < bricks.length; c++) {
+        for (let r = 0; r < bricks[c].length; r++) {
+          if (bricks[c][r].status > 0) bricksLeft++;
+        }
+      }
+      if (bricksLeft === 0) {
+        showItemPopup(currentStage);
+      }
+    }
+  }
+
+  // ========== 스테이지 전환 / 장비획득 ==========
+  function showItemPopup(stage) {
+    // 팝업 열고 아이템 텍스트 표시
+    // "계속하기" 클릭 시 다음 스테이지로 전환 or 엔딩
+  }
+
+  // ========== 보조 함수 ==========
+  function getRandomQuizForStage(stage) {
+    // quizData 중에서 해당 stage 문제만 뽑아 랜덤 리턴
+  }
+
+  // ========== 점수 업데이트 ==========
+  function updateScore(amount) {
+    score += amount;
+    $('#score-label').text(score);
+  }
+
+  // ========== 생명 감소 ==========
+  function decreaseLife() {
+    lives--;
+    updateLivesDisplay();
+  }
+
+  // ========== 생명 표시 갱신 ==========
+  function updateLivesDisplay() {
+    $('.life-heart').each(function (index) {
+      if (index < lives) {
+        $(this).show();
+      } else {
+        $(this).hide();
+      }
+    });
+  }
+
+  // 5. 퀴즈 팝업화면 
+  // 6. 장비획득팝업화면
+  // 7. 엔딩 화면
   const beforeDragonMessages = [
     "마왕: …후후, 결국 여기까지 왔구나.",
     "마왕: 네가 모은 HTML, CSS, JS, jQuery… 그 모든 스킬은 내 시험을 무너뜨리기엔 부족하다!",
@@ -611,6 +565,6 @@ $(document).ready(function () {
       $('.endingcredit-wrapper').fadeIn(300);
     });
   });
-  //6.엔딩 크레딧 화면
+  //8.엔딩 크레딧 화면
 
 });
