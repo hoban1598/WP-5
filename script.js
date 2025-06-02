@@ -850,11 +850,4 @@ $(document).ready(function () {
   $('.ending-button.skip').on('click', function () {
     goToEndingCredit();
   });
-  // [임시] 엔딩 바로보기 버튼 (나중에 삭제)
-  $('#show-ending-btn').on('click', function() {
-    $('.start').fadeOut(300, function() {
-      $('.ending-wrapper').fadeIn(300);
-      startEndingSequence();
-    });
-  });
 });
