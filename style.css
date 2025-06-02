@@ -680,7 +680,7 @@ button.start-button-wrapper:hover {
   flex-shrink: 0;
 }
 
-/* ============================= */
+
 /* ============================= */
 /* 퀴즈 팝업 화면 */
 /* ============================= */
@@ -831,14 +831,14 @@ button.start-button-wrapper:hover {
 .quiz-result {
   position: absolute;
   width: 570px;
-  height: 175px;
+  height: 200px;
   left: 60px;
   top: 331px;
   background: rgba(74, 222, 128, 0.10);
   border-radius: 10px;
   outline: 1px solid #4ADE80;
   outline-offset: -1px;
-  display: none; /* 기본적으로 숨김 */
+  display: none;
 }
 
 .result-text {
@@ -855,38 +855,37 @@ button.start-button-wrapper:hover {
 
 .result-explanation {
   position: absolute;
-  left: 76px;
+  left: 50%;
   top: 74px;
+  transform: translateX(-50%);
   color: white;
   font-size: 16px;
   font-family: "Noto Sans";
   font-weight: 700;
   max-width: 418px;
   line-height: 1.4;
+  text-align: center;
 }
 
 .continue-btn {
   position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 18px;
   width: 200px;
   height: 40px;
-  left: 185px;
-  top: 112px;
   background: radial-gradient(ellipse 50% 50% at 50% 50%, #EA950A 0%, #EA660B 100%);
   border: none;
   border-radius: 20px;
   cursor: pointer;
   overflow: hidden;
+  display: block;
 }
 
 .continue-btn-text {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  text-align: center;
-  color: white;
-  font-size: 16px;
+  color: #fff;
   font-family: "Noto Sans";
+  font-size: 16px;
   font-weight: 700;
 }
 
@@ -964,204 +963,107 @@ button.start-button-wrapper:hover {
 /* 엔딩 화면 */
 /* ============================= */
 .ending-wrapper {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  overflow: hidden;
+  position: fixed;
+  left: 0; top: 0;
+  width: 100vw;
+  height: 100vh;
+  background: url('Img/ending.png') no-repeat center center;
+  background-size: cover;
+  overflow: auto;
   z-index: 20;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
-
+.ending-content {
+  position: relative;
+  width: 1920px;
+  height: 1080px;
+  background: rgba(0,0,0,0.5);
+  overflow: hidden;
+}
 .ending-message-box {
-  width: 26vw;
-  height: 12vh;
   position: absolute;
-  left: 50%;
-  top: 44%;
-  transform: translate(-50%, -50%);
+  width: 500px;
+  height: 130px;
+  left: 710px;
+  top: 475px;
   background: #142011;
   border-radius: 10px;
-  outline: 1px solid #59460F;
-  outline-offset: -1px;
-  overflow: hidden;
+  outline: 1px #59460F solid;
   display: flex;
   align-items: center;
   justify-content: center;
+  z-index: 10;
 }
-
 .ending-message {
   color: #D0D4D9;
-  font-size: 1.5vw;
-  font-family: "Noto Sans";
+  font-size: 18px;
+  font-family: 'Noto Sans', 'Malgun Gothic', sans-serif;
   font-weight: 500;
   text-align: center;
-  padding: 1vw;
-  line-height: 1.4;
+  width: 100%;
+  word-break: keep-all;
 }
-
-.ending-button.next,
-.ending-button.skip {
-  width: 4.5vw;
-  height: 5.5vh;
-  border-radius: 20px;
-  font-size: 1vw;
-  font-family: "Noto Sans";
-  font-weight: 700;
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: absolute;
-  top: 70%;
-  cursor: pointer;
-}
-
 .ending-button.next {
-  left: 47%;
-  background: radial-gradient(ellipse at center, #EA950A 0%, #EA660B 100%);
-  transform: translateX(-100%);
-}
-
-.ending-button.skip {
-  left: 53%;
-  background: radial-gradient(ellipse at center, #B3B3B3 0%, #848484 100%);
-}
-
-.ending-background {
-  width: 100vw;
-  height: 100vh;
-  position: relative;
-  overflow: hidden;
-  background-image: url(Img/ending.png);
-  background-size: cover;
-  background-position: center;
-}
-.ending-character {
-  width: 13.3vw; /* ~256px on 1920px */
-  height: 13.3vw;
-  max-width: 256px;
-  max-height: 256px;
   position: absolute;
-  left: 50%;
-  top: 28.4vh; /* ~307px on 1080px */
-  transform: translateX(-50%);
-}
-
-.ending-icon {
-  width: 4vw;
-  height: 4vw;
-  max-width: 76px;
-  max-height: 76px;
-  position: absolute;
-  left: 40.3vw; /* ~775px/1920 */
-  top: 63.3vh; /* ~684px/1080 */
-}
-
-.ending-dragon {
-  width: 13.5vw;
-  height: 13.5vw;
-  max-width: 258px;
-  max-height: 258px;
-  position: absolute;
-  left: 52.6vw; /* approx 1010px/1920 */
-  top: 39.5vh;  /* approx 427px/1080 */
-  transform: translate(-50%, 0);
-}
-
-
-.ending-button {
-  position: absolute;
-  height: 40px;
-  border-radius: 20px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: white;
-  font-size: 16px;
-  font-family: "Noto Sans";
-  font-weight: 700;
-  text-align: center;
-  overflow: hidden;
-  border: none;
-  cursor: pointer;
-}
-
-.ending-button.next {
   width: 80px;
+  height: 40px;
   left: 858px;
   top: 701px;
-  background: radial-gradient(ellipse at center, #EA950A 0%, #EA660B 100%);
+  background: radial-gradient(ellipse 50% 50% at 50% 50%, #EA950A 0%, #EA660B 100%);
+  border-radius: 20px;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 16px;
+  font-family: 'Noto Sans';
+  font-weight: 700;
+  z-index: 11;
 }
-
 .ending-button.skip {
+  position: absolute;
   width: 90px;
+  height: 40px;
   left: 955px;
   top: 701px;
-  background: radial-gradient(ellipse at center, #B3B3B3 0%, #848484 100%);
+  background: radial-gradient(ellipse 50% 50% at 50% 50%, #B3B3B3 0%, #848484 100%);
+  border-radius: 20px;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 16px;
+  font-family: 'Noto Sans';
+  font-weight: 700;
+  z-index: 11;
 }
-
-/* ============================= */
-/* 엔딩 화면 - 두 번째 장면: 어두워지고 대사 등장 */
-/* ============================= */
-.ending-dark-scene {
-  width: 100vw;
-  height: 100vh;
-  position: relative;
-  background: rgba(0, 0, 0, 0.5);
-  overflow: hidden;
-  z-index: 21;
-}
-
-/* ============================= */
-/* 엔딩 화면 - 세 번째 장면: 용 등장 */
-/* ============================= */
-.ending-dragon-scene {
-  width: 100vw;
-  height: 100vh;
-  position: relative;
-  background-image: url("https://placehold.co/1920x1080");
-  background-size: cover;
-  background-position: center;
-  overflow: hidden;
-  z-index: 22;
-}
-
-/* ============================= */
-/* 엔딩 화면 - 공통 이미지 스타일 */
-/* ============================= */
-.ending-character {
-  width: 13.3vw;
-  height: 13.3vw;
-  max-width: 256px;
-  max-height: 256px;
+.ending-demonking {
   position: absolute;
-  left: 50%;
-  top: 28.4vh;
-  transform: translateX(-50%);
+  width: 256px;
+  left: 960px;
+  top: 307px;
+  transform: translate(-50%, 0);
+  z-index: 2;
 }
-
+.ending-hero {
+  position: absolute;
+  width: 76px;
+  left: 775px;
+  top: 684px;
+  transform: translate(-50%, 0);
+  z-index: 2;
+}
 .ending-dragon {
-  width: 13.5vw;
-  height: 13.5vw;
-  max-width: 258px;
-  max-height: 258px;
   position: absolute;
-  left: 52.6vw;
-  top: 39.5vh;
+  width: 258px;
+  left: 1010px;
+  top: 427px;
   transform: translate(-50%, 0);
-}
-
-.ending-icon {
-  width: 4vw;
-  height: 4vw;
-  max-width: 76px;
-  max-height: 76px;
-  position: absolute;
-  left: 48.6vw;
-  top: 55.5vh;
-  transform: translate(-50%, 0);
+  z-index: 2;
 }
 
 /* ============================= */
@@ -1169,10 +1071,8 @@ button.start-button-wrapper:hover {
 /* ============================= */
 .endingcredit-wrapper {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
   background-image: url(Img/ending-credit.png);
   background-size: cover;
   background-position: center;
@@ -1181,14 +1081,20 @@ button.start-button-wrapper:hover {
   justify-content: center;
   align-items: center;
 }
-
 .ending-credit-text {
+  position: absolute;
+  left: 50%; top: 50%;
+  transform: translate(-50%, -50%);
   text-align: center;
-  color: #D1A21E;
-  font-size: 72px;
+  color: #A97B1C;
+  font-size: 7vw;
+  min-font-size: 40px;
+  max-font-size: 120px;
   font-family: "Source Serif Pro";
-  font-weight: 600;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.25);
+  font-weight: 700;
+  text-shadow: 2px 2px 8px rgba(0,0,0,0.25);
+  letter-spacing: 2px;
+  z-index: 100;
 }
 
 /* ============================= */
