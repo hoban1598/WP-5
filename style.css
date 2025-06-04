@@ -828,56 +828,73 @@ button.start-button-wrapper:hover {
 .quiz-result {
   position: absolute;
   width: 85%;
-  height: 160px;
+  height: auto;
+  min-height: 180px;
   left: 50%;
-  top: 320px;
+  top: 300px;
   transform: translateX(-50%);
   background: rgba(74, 222, 128, 0.10);
-  border-radius: 10px;
+  border-radius: 15px;
   outline: 1px solid #4ADE80;
   outline-offset: -1px;
   display: none;
+  padding: 25px 20px;
+  box-sizing: border-box;
 }
 
 .result-text {
-  position: absolute;
-  left: 50%;
-  top: 33px;
-  transform: translateX(-50%);
+  position: relative;
+  left: 0;
+  top: 0;
+  margin-bottom: 20px;
   text-align: center;
   color: #4ADE80;
-  font-size: 18px;
+  font-size: 24px;
   font-family: "Noto Sans";
   font-weight: 700;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .result-explanation {
-  position: absolute;
-  left: 50%;
-  top: 74px;
-  transform: translateX(-50%);
+  position: relative;
+  left: 0;
+  top: 0;
+  margin-bottom: 25px;
   color: white;
   font-size: 16px;
   font-family: "Noto Sans";
-  font-weight: 700;
-  max-width: 418px;
-  line-height: 1.4;
+  font-weight: 500;
+  line-height: 1.6;
   text-align: center;
+  background: rgba(0, 0, 0, 0.2);
+  padding: 15px 20px;
+  border-radius: 10px;
+  border-left: 4px solid #4ADE80;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .continue-btn {
-  position: absolute;
+  position: relative;
   left: 50%;
   transform: translateX(-50%);
-  bottom: 18px;
+  margin-top: 5px;
   width: 200px;
-  height: 40px;
+  height: 45px;
   background: radial-gradient(ellipse 50% 50% at 50% 50%, #EA950A 0%, #EA660B 100%);
   border: none;
-  border-radius: 20px;
+  border-radius: 22px;
   cursor: pointer;
   overflow: hidden;
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(234, 149, 10, 0.3);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.continue-btn:hover {
+  transform: translateX(-50%) translateY(-2px);
+  box-shadow: 0 6px 16px rgba(234, 149, 10, 0.4);
 }
 
 .continue-btn-text {
@@ -885,6 +902,21 @@ button.start-button-wrapper:hover {
   font-family: "Noto Sans";
   font-size: 16px;
   font-weight: 700;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* 퀴즈 결과 - 오답일 때 스타일 */
+.quiz-result.incorrect {
+  background: rgba(248, 113, 113, 0.10);
+  outline: 1px solid #F87171;
+}
+
+.quiz-result.incorrect .result-text {
+  color: #F87171;
+}
+
+.quiz-result.incorrect .result-explanation {
+  border-left: 4px solid #F87171;
 }
 
 /* ============================= */

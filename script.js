@@ -624,24 +624,21 @@ function checkAnswer(userAnswer) {
   }
   
   $('.quiz-box').animate({
-    height: '540px'
+    height: '580px'
   }, 300);
+  
   const resultText = isCorrect ? '정답 !' : '틀렸습니다 !';
-  const resultColor = isCorrect ? '#4ADE80' : '#EF4444';
-  if (isCorrect) {
-    $('#quizResult').css({
-      'background': 'rgba(74, 222, 128, 0.10)',
-      'outline': '1px solid #4ADE80'
-    });
-  } else {
-    $('#quizResult').css({
-      'background': 'rgba(248, 113, 113, 0.10)',
-      'outline': '1px solid #F87171'
-    });
+  
+  // 새로운 CSS 클래스 사용
+  $('#quizResult').removeClass('incorrect');
+  if (!isCorrect) {
+    $('#quizResult').addClass('incorrect');
   }
-  $('#resultText').text(resultText).css('color', resultColor);
+  
+  $('#resultText').text(resultText);
   $('#resultExplanation').text(`해설 : ${currentQuiz.explanation}`);
   $('#quizResult').fadeIn(300);
+  
   if (isCorrect) {
     updateScore(200);
     playQuizCorrectSound();
@@ -649,6 +646,7 @@ function checkAnswer(userAnswer) {
     // 퀴즈 오답 시 생명 감소 제거 - 단순히 사운드만 재생
     playQuizWrongSound();
   }
+  
   if (window._currentQuizBrick) {
     // 마지막 벽돌이 퀴즈 벽돌인지 체크
     window._currentQuizBrick.status = 0;
