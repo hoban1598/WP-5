@@ -16,6 +16,14 @@ const STAGE_TIME_LIMITS = { 1: 600, 2: 420, 3: 300 };
 const QUIZ_LABELS_BY_STAGE = { 1: ['HTML', 'CSS'], 2: ['JS'], 3: ['jQuery'] };
 const STAGE_TO_CATEGORY = { 1: ['html', 'css'], 2: ['javascript'], 3: ['jquery'] };
 
+// ======= 퀴즈 출제 관리 변수 추가 =======
+let usedQuizzes = {
+  html: [],
+  css: [],
+  javascript: [],
+  jquery: []
+};
+
 // ======= 엔딩 상태 변수 전역 선언 =======
 let endingMessageIndex = 0;
 let dragonPhase = false;
@@ -51,25 +59,29 @@ const BGM_ENDING2 = 'sound/엔딩2.mp3';
 function playBgm(src, loop = false) {
   // 기존 BGM 완전 정지 및 해제
   if (window.globalBgmAudio) {
-    window.globalBgmAudio.pause();
-    window.globalBgmAudio.currentTime = 0;
-    window.globalBgmAudio.src = '';
-    window.globalBgmAudio.load();
+    try {
+      window.globalBgmAudio.pause();
+      window.globalBgmAudio.currentTime = 0;
+    } catch (e) {
+      // 에러 무시
+    }
+    window.globalBgmAudio = null;
   }
-  // 파일 존재 여부 체크 (HEAD 요청)
-  fetch(src, { method: 'HEAD' })
-    .then(res => {
-      if (!res.ok) throw new Error('BGM 파일 없음: ' + src);
-      window.globalBgmAudio = new Audio(src);
-      window.globalBgmAudio.loop = loop;
-      window.globalBgmAudio.volume = 0.3;
-      window.globalBgmAudio.play().catch(e => {
-        console.warn('BGM 재생 실패:', src, e.message);
-      });
-    })
-    .catch(err => {
-      console.warn('[BGM]', err.message);
+  
+  // 새로운 BGM 재생 시도
+  try {
+    window.globalBgmAudio = new Audio(src);
+    window.globalBgmAudio.loop = loop;
+    window.globalBgmAudio.volume = 0.3;
+    
+    // 재생 시도 (실패해도 조용히 넘어감)
+    window.globalBgmAudio.play().catch(() => {
+      // BGM 재생 실패 시 조용히 넘어감
     });
+    
+  } catch (error) {
+    // 오디오 객체 생성 실패 시 조용히 넘어감
+  }
 }
 
 function playSelectedBGM() {
@@ -82,7 +94,7 @@ function playEndingSound() {
   playBgm('sound/엔딩1.mp3', false);
 }
 function playCreditSound() {
-  playBgm('sound/엔딩크레딧.mp3', false);
+  playBgm('sound/엔딩2.mp3', false); // 엔딩크레딧.mp3 대신 엔딩2.mp3 사용
 }
 
 // ======= 전역 함수 선언 =======
@@ -105,12 +117,12 @@ function getSelectedStage() {
 /** 선택된 캐릭터 이미지 경로 반환 */
 function getSelectedCharacterImage() {
   const selectedCharacter = $('.character-card.selected img').attr('src');
-  return selectedCharacter || 'default-character.png';
+  return selectedCharacter || 'img/male.png';
 }
 /** 선택된 펫 이미지 경로 반환 */
 function getSelectedPetImage() {
   const selectedPet = $('.pet-option.selected img').attr('src');
-  return selectedPet || 'default-pet.png';
+  return selectedPet || 'img/blue.png';
 }
 /** 선택된 배경음악 경로 반환 */
 function getSelectedBGM() {
@@ -120,11 +132,15 @@ function getSelectedBGM() {
 /** 사운드 파일 재생 */
 function playSound(soundFile) {
   if (!soundFile) return;
-  const audio = new Audio(soundFile);
-  audio.volume = 0.3;
-  audio.play().catch(error => {
-    console.log(`사운드 재생 실패 (${soundFile}):`, error.message);
-  });
+  try {
+    const audio = new Audio(soundFile);
+    audio.volume = 0.3;
+    audio.play().catch(() => {
+      // 사운드 재생 실패 시 조용히 넘어감
+    });
+  } catch (error) {
+    // 오디오 객체 생성 실패 시 조용히 넘어감
+  }
 }
 /** 벽돌 히트 사운드(임시) */
 function playBrickHitSound() {}
@@ -172,15 +188,40 @@ function initCanvasGame() {
   const brickWidth = 89, brickHeight = 24, brickPadding = 0, offsetTop = 50;
   const totalBrickWidth = colCount * brickWidth + (colCount - 1) * brickPadding;
   const offsetLeft = (canvas.width - totalBrickWidth) / 2;
-  bricks = [];
+  
+  // 퀴즈 벽돌 개수 고정
+  const totalBricks = colCount * rowCount;
+  let quizBrickCount;
+  if (currentStage === 1) {
+    quizBrickCount = 6; // Stage 1: 21개 중 6개
+  } else {
+    quizBrickCount = 9; // Stage 2,3: 28개 중 9개
+  }
+  
+  // 랜덤한 위치에 퀴즈 벽돌 배치를 위한 인덱스 배열 생성
+  const allPositions = [];
+  for (let i = 0; i < totalBricks; i++) {
+    allPositions.push(i);
+  }
+  
+  // 퀴즈 벽돌이 들어갈 위치를 랜덤하게 선택
+  const quizPositions = [];
+  for (let i = 0; i < quizBrickCount; i++) {
+    const randomIndex = Math.floor(Math.random() * allPositions.length);
+    quizPositions.push(allPositions[randomIndex]);
+    allPositions.splice(randomIndex, 1); // 선택된 위치 제거
+  }
+  
+  let brickIndex = 0;
   for (let c = 0; c < colCount; c++) {
     bricks[c] = [];
     for (let r = 0; r < rowCount; r++) {
       const brickX = c * (brickWidth + brickPadding) + offsetLeft;
       const brickY = r * (brickHeight + brickPadding) + offsetTop;
-      const isQuizBrick = Math.random() < 0.3;
+      const isQuizBrick = quizPositions.includes(brickIndex);
       const label = getQuizLabelForStage();
       bricks[c][r] = { x: brickX, y: brickY, width: brickWidth, height: brickHeight, status: isQuizBrick ? 2 : 1, label: label };
+      brickIndex++;
     }
   }
   loadQuizData();
@@ -220,29 +261,13 @@ let quizData = [
   {
     "id": 3,
     "category": "html",
-    "question": "HTML에서 가장 큰 제목을 나타내는 태그는?",
-    "options": ["<h6>", "<h3>", "<h1>", "<header>"],
+    "question": "HTML 문서의 시작을 나타내는 선언은?",
+    "options": ["<html>", "<start>", "<!DOCTYPE html>", "<head>"],
     "correct": 2,
-    "explanation": "<h1>은 HTML에서 가장 큰 제목을 나타내는 태그입니다."
+    "explanation": "<!DOCTYPE html>은 HTML5 문서의 시작을 선언하는 태그입니다."
   },
   {
     "id": 4,
-    "category": "html",
-    "question": "HTML에서 이미지를 삽입하는 태그는?",
-    "options": ["<image>", "<img>", "<picture>", "<photo>"],
-    "correct": 1,
-    "explanation": "<img> 태그는 HTML에서 이미지를 삽입할 때 사용합니다."
-  },
-  {
-    "id": 5,
-    "category": "html",
-    "question": "HTML에서 링크를 만드는 태그는?",
-    "options": ["<link>", "<a>", "<href>", "<url>"],
-    "correct": 1,
-    "explanation": "<a> 태그는 HTML에서 하이퍼링크를 만들 때 사용합니다."
-  },
-  {
-    "id": 6,
     "category": "css",
     "question": "CSS에서 텍스트 색상을 변경하는 속성은?",
     "options": ["background-color", "color", "text-color", "font-color"],
@@ -250,7 +275,7 @@ let quizData = [
     "explanation": "CSS에서 color 속성은 텍스트의 색상을 변경합니다."
   },
   {
-    "id": 7,
+    "id": 5,
     "category": "css",
     "question": "CSS에서 요소를 가운데 정렬하는 속성은?",
     "options": ["align: center", "text-align: center", "center: true", "position: center"],
@@ -258,31 +283,15 @@ let quizData = [
     "explanation": "text-align: center는 텍스트나 인라인 요소를 가운데 정렬합니다."
   },
   {
-    "id": 8,
+    "id": 6,
     "category": "css",
-    "question": "CSS에서 배경색을 설정하는 속성은?",
-    "options": ["color", "bg-color", "background-color", "background"],
-    "correct": 2,
-    "explanation": "background-color 속성은 요소의 배경색을 설정합니다."
-  },
-  {
-    "id": 9,
-    "category": "css",
-    "question": "CSS에서 글꼴 크기를 설정하는 속성은?",
-    "options": ["text-size", "font-size", "size", "font-weight"],
+    "question": "CSS에서 글꼴을 지정하는 속성은?",
+    "options": ["font-style", "font-family", "text-font", "font-set"],
     "correct": 1,
-    "explanation": "font-size 속성은 텍스트의 글꼴 크기를 설정합니다."
+    "explanation": "font-family는 텍스트의 글꼴을 설정할 때 사용하는 CSS 속성입니다."
   },
   {
-    "id": 10,
-    "category": "css",
-    "question": "CSS에서 요소의 테두리를 설정하는 속성은?",
-    "options": ["border", "outline", "frame", "edge"],
-    "correct": 0,
-    "explanation": "border 속성은 요소의 테두리를 설정합니다."
-  },
-  {
-    "id": 11,
+    "id": 7,
     "category": "javascript",
     "question": "JavaScript에서 변수를 선언하는 키워드는?",
     "options": ["variable", "var", "define", "set"],
@@ -290,7 +299,7 @@ let quizData = [
     "explanation": "var, let, const 등이 JavaScript에서 변수를 선언하는 키워드입니다."
   },
   {
-    "id": 12,
+    "id": 8,
     "category": "javascript",
     "question": "JavaScript에서 함수를 정의하는 키워드는?",
     "options": ["function", "def", "func", "method"],
@@ -298,7 +307,7 @@ let quizData = [
     "explanation": "function 키워드는 JavaScript에서 함수를 정의할 때 사용합니다."
   },
   {
-    "id": 13,
+    "id": 9,
     "category": "javascript",
     "question": "JavaScript에서 배열의 길이를 구하는 속성은?",
     "options": ["size", "length", "count", "total"],
@@ -306,7 +315,7 @@ let quizData = [
     "explanation": "length 속성은 JavaScript 배열의 길이를 반환합니다."
   },
   {
-    "id": 14,
+    "id": 10,
     "category": "javascript",
     "question": "JavaScript에서 문자열을 숫자로 변환하는 함수는?",
     "options": ["parseInt()", "toNumber()", "convert()", "number()"],
@@ -314,12 +323,44 @@ let quizData = [
     "explanation": "parseInt() 함수는 문자열을 정수로 변환합니다."
   },
   {
-    "id": 15,
+    "id": 11,
     "category": "javascript",
     "question": "JavaScript에서 요소를 선택하는 메서드는?",
     "options": ["selectElement()", "getElementById()", "getElement()", "findElement()"],
     "correct": 1,
     "explanation": "getElementById()는 특정 ID를 가진 요소를 선택하는 메서드입니다."
+  },
+  {
+    "id": 12,
+    "category": "javascript",
+    "question": "JavaScript에서 콘솔에 출력하는 함수는?",
+    "options": ["console.log()", "print()", "output()", "show()"],
+    "correct": 0,
+    "explanation": "console.log()는 디버깅을 위해 콘솔에 출력하는 함수입니다."
+  },
+  {
+    "id": 13,
+    "category": "javascript",
+    "question": "JavaScript에서 조건문을 만드는 키워드는?",
+    "options": ["case", "if", "check", "switch"],
+    "correct": 1,
+    "explanation": "if 키워드는 조건이 참일 때 특정 코드를 실행하는 조건문입니다."
+  },
+  {
+    "id": 14,
+    "category": "javascript",
+    "question": "JavaScript에서 반복문을 나타내는 키워드는?",
+    "options": ["for", "repeat", "loop", "iterate"],
+    "correct": 0,
+    "explanation": "for 키워드는 JavaScript에서 반복문을 생성할 때 사용합니다."
+  },
+  {
+    "id": 15,
+    "category": "javascript",
+    "question": "JavaScript에서 브라우저에 경고창을 띄우는 함수는?",
+    "options": ["warn()", "alert()", "message()", "popup()"],
+    "correct": 1,
+    "explanation": "alert() 함수는 사용자에게 경고창을 띄우는 함수입니다."
   },
   {
     "id": 16,
@@ -360,8 +401,41 @@ let quizData = [
     "options": ["content()", "text()", "innerHTML()", "value()"],
     "correct": 1,
     "explanation": "text() 메서드는 jQuery에서 요소의 텍스트 내용을 변경합니다."
+  },
+  {
+    "id": 21,
+    "category": "jquery",
+    "question": "jQuery에서 문서 로드 완료 후 실행되는 함수는?",
+    "options": ["$(window).load()", "$(document).ready()", "$.load()", "$(body).start()"],
+    "correct": 1,
+    "explanation": "$(document).ready()는 문서가 준비되었을 때 실행되는 함수입니다."
+  },
+  {
+    "id": 22,
+    "category": "jquery",
+    "question": "jQuery에서 요소를 제거하는 메서드는?",
+    "options": ["delete()", "remove()", "detach()", "clear()"],
+    "correct": 1,
+    "explanation": "remove() 메서드는 선택한 요소와 그 하위 요소를 DOM에서 제거합니다."
+  },
+  {
+    "id": 23,
+    "category": "jquery",
+    "question": "jQuery에서 AJAX 요청을 보내는 기본 메서드는?",
+    "options": ["ajax()", "$.ajax()", "post()", "loadData()"],
+    "correct": 1,
+    "explanation": "$.ajax()는 jQuery에서 AJAX 요청을 전송할 때 사용하는 메서드입니다."
+  },
+  {
+    "id": 24,
+    "category": "jquery",
+    "question": "jQuery에서 서버 응답 성공 시 콜백 함수를 지정하는 메서드는?",
+    "options": ["success()", "done()", "callback()", "after()"],
+    "correct": 1,
+    "explanation": "done() 메서드는 AJAX 요청이 성공했을 때 실행되는 콜백 함수를 정의합니다."
   }
 ];
+
 function loadQuizData() {
   console.log('퀴즈 데이터 로드 완료:', quizData.length + '개 문제');
   console.log('카테고리별 문제 수:');
@@ -449,23 +523,39 @@ function detectCollision() {
   const leftWall = 0;
   const rightWall = canvas.width;
   const ballNextX = ball.x + ball.dx;
+  
+  // 좌우 벽 충돌
   if (ballNextX - 15 < leftWall || ballNextX + 15 > rightWall) {
     ball.dx = -ball.dx;
   }
+  
+  // 천장 충돌
   if (ball.y + ball.dy < ball.radius) {
     ball.dy = -ball.dy;
   }
-  if (
-    ball.y + ball.dy > paddle.y - paddle.height &&
-    ball.x > paddle.x &&
-    ball.x < paddle.x + paddle.width
-  ) {
-    ball.dy = -ball.dy;
-  }
+  
+  // 바닥 충돌 - 패들 충돌보다 먼저 확인
   if (ball.y + ball.dy > canvas.height - ball.radius) {
     decreaseLife();
     resetBallAndPaddle();
+    return; // 바닥에 닿으면 즉시 리턴하여 다른 충돌 처리 방지
   }
+  
+  // 패들 충돌 - 더 안전한 충돌 감지
+  if (
+    ball.dy > 0 && // 공이 아래로 움직일 때만
+    ball.x >= paddle.x - ball.radius && // 공이 패들 범위에 있고 (여유값 추가)
+    ball.x <= paddle.x + paddle.width + ball.radius &&
+    ball.y + ball.radius >= paddle.y && // 공이 패들과 겹치거나
+    ball.y + ball.radius <= paddle.y + paddle.height && // 패들 영역 안에 있을 때
+    ball.y < paddle.y // 공의 중심이 패들 위쪽에 있을 때
+  ) {
+    // 공을 패들 위쪽으로 정확히 위치시키기
+    ball.y = paddle.y - ball.radius;
+    ball.dy = -Math.abs(ball.dy); // 반드시 위쪽으로 튕기도록
+  }
+  
+  // 벽돌 충돌
   for (let c = 0; c < bricks.length; c++) {
     for (let r = 0; r < bricks[c].length; r++) {
       const brick = bricks[c][r];
@@ -479,7 +569,8 @@ function detectCollision() {
           ball.dy = -ball.dy;
           if (brick.status === 2) {
             pauseGame();
-            const quiz = getRandomQuizForStage(currentStage);
+            // 벽돌 라벨에 따른 퀴즈 선택
+            const quiz = getQuizByBrickLabel(brick.label);
             showQuizModal(quiz);
             window._currentQuizBrick = brick;
             return;
@@ -500,7 +591,7 @@ function showQuizModal(quizObj) {
   currentQuiz = quizObj;
   $('.quiz-box').css('height', '320px');
   $('#quizTitle').text(`Stage ${currentStage} 퀴즈`);
-  $('#quizQuestion').text(quizObj.question);
+  $('#quizQuestion').text(quizObj.question).css('color', 'white'); // 퀴즈 문제 글자색을 흰색으로 설정
   const options = $('.quiz-option');
   options.each(function(index) {
     if (index < quizObj.options.length) {
@@ -508,7 +599,9 @@ function showQuizModal(quizObj) {
       $(this).find('.quiz-option-text').text(`${optionLetter}. ${quizObj.options[index]}`);
       $(this).attr('data-answer', index);
       $(this).removeClass('selected');
-      $(this).css('pointer-events', 'auto');
+      // 퀴즈 옵션과 텍스트 색상을 모두 초기화
+      $(this).css({'pointer-events': 'auto', 'color': ''});
+      $(this).find('.quiz-option-text').css('color', ''); // 텍스트 색상도 명시적으로 초기화
       $(this).off('click').on('click', function() {
         $('.quiz-option').removeClass('selected');
         $(this).addClass('selected');
@@ -524,6 +617,12 @@ function checkAnswer(userAnswer) {
   if (!currentQuiz) return;
   const isCorrect = userAnswer === currentQuiz.correct;
   $('.quiz-option').off('click').css('pointer-events', 'none');
+  
+  // 틀렸을 때 선택한 옵션의 텍스트 색을 빨간색으로 변경
+  if (!isCorrect) {
+    $('.quiz-option').eq(userAnswer).find('.quiz-option-text').css('color', '#EF4444');
+  }
+  
   $('.quiz-box').animate({
     height: '540px'
   }, 300);
@@ -547,7 +646,7 @@ function checkAnswer(userAnswer) {
     updateScore(200);
     playQuizCorrectSound();
   } else {
-    decreaseLife();
+    // 퀴즈 오답 시 생명 감소 제거 - 단순히 사운드만 재생
     playQuizWrongSound();
   }
   if (window._currentQuizBrick) {
@@ -607,6 +706,15 @@ function restartGame() {
   isGamePaused = false;
   dragonPhase = false;
   endingMessageIndex = 0;
+  
+  // 퀴즈 사용 기록 초기화
+  usedQuizzes = {
+    html: [],
+    css: [],
+    javascript: [],
+    jquery: []
+  };
+  
   if (timerInterval) {
     clearInterval(timerInterval);
     timerInterval = null;
@@ -642,17 +750,17 @@ function showItemPopup(stage) {
   let itemImage, itemTitle, equipmentCount;
   switch(stage) {
     case 1:
-      itemImage = 'Img/sword.png';
+      itemImage = 'img/sword.png';
       itemTitle = '전설의 검 획득!';
       equipmentCount = '1/3개 수집 완료';
       break;
     case 2:
-      itemImage = 'Img/armor.png';
+      itemImage = 'img/armor.png';
       itemTitle = '전설의 갑옷 획득!';
       equipmentCount = '2/3개 수집 완료';
       break;
     case 3:
-      itemImage = 'Img/dragon.png';
+      itemImage = 'img/dragon.png';
       itemTitle = '전설의 용 획득!';
       equipmentCount = '3/3개 수집 완료';
       break;
@@ -678,6 +786,13 @@ function showItemPopup(stage) {
         currentStage = stage + 1;
         $('#stage-label').text(`Stage${currentStage}`);
         selectedQuizLabels = QUIZ_LABELS_BY_STAGE[currentStage] || ['???'];
+        // 스테이지 전환 시 퀴즈 사용 기록 초기화
+        usedQuizzes = {
+          html: [],
+          css: [],
+          javascript: [],
+          jquery: []
+        };
         initCanvasGame();
       }
     });
@@ -850,11 +965,63 @@ $(document).ready(function () {
   $('.ending-button.skip').on('click', function () {
     goToEndingCredit();
   });
-  // [임시] 엔딩 바로보기 버튼 (나중에 삭제)
-  $('#show-ending-btn').on('click', function() {
-    $('.start').fadeOut(300, function() {
-      $('.ending-wrapper').fadeIn(300);
-      startEndingSequence();
-    });
-  });
 });
+
+/** 벽돌 라벨에 따른 카테고리별 중복없는 퀴즈 반환 */
+function getQuizByBrickLabel(brickLabel) {
+  if (!quizData || quizData.length === 0) {
+    console.error('퀴즈 데이터가 로드되지 않았습니다.');
+    return null;
+  }
+  
+  // 라벨을 카테고리로 매핑
+  let category;
+  switch(brickLabel.toLowerCase()) {
+    case 'html':
+      category = 'html';
+      break;
+    case 'css':
+      category = 'css';
+      break;
+    case 'js':
+      category = 'javascript';
+      break;
+    case 'jquery':
+      category = 'jquery';
+      break;
+    default:
+      category = 'html';
+  }
+  
+  // 해당 카테고리의 모든 퀴즈 가져오기
+  const categoryQuizzes = quizData.filter(quiz => 
+    quiz.category.toLowerCase() === category
+  );
+  
+  if (categoryQuizzes.length === 0) {
+    console.error(`${category} 카테고리에 해당하는 퀴즈가 없습니다.`);
+    return null;
+  }
+  
+  // 사용하지 않은 퀴즈 찾기
+  const unusedQuizzes = categoryQuizzes.filter(quiz => 
+    !usedQuizzes[category].includes(quiz.id)
+  );
+  
+  // 모든 퀴즈를 사용했다면 초기화
+  if (unusedQuizzes.length === 0) {
+    usedQuizzes[category] = [];
+    const resetQuizzes = categoryQuizzes.slice();
+    const randomIndex = Math.floor(Math.random() * resetQuizzes.length);
+    const selectedQuiz = resetQuizzes[randomIndex];
+    usedQuizzes[category].push(selectedQuiz.id);
+    return selectedQuiz;
+  }
+  
+  // 랜덤하게 하나 선택
+  const randomIndex = Math.floor(Math.random() * unusedQuizzes.length);
+  const selectedQuiz = unusedQuizzes[randomIndex];
+  usedQuizzes[category].push(selectedQuiz.id);
+  
+  return selectedQuiz;
+}

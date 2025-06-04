@@ -520,7 +520,7 @@ button.start-button-wrapper:hover {
   justify-content: center;
   align-items: center;
   z-index: 10;
-  background-image: url("background.png");
+  background-image: url("img/background.png");
   background-size: cover;
   background-position: center;
   overflow: hidden;
@@ -743,22 +743,11 @@ button.start-button-wrapper:hover {
   font-weight: 700;
 }
 
-.quiz-question-container {
-  position: absolute;
-  width: 570px;
-  height: 175px;
-  left: 60px;
-  top: 121px;
-  background: rgba(255, 255, 255, 0.10);
-  border-radius: 10px;
-  outline: 1px solid #728183;
-  outline-offset: -1px;
-}
-
 .quiz-question {
   position: absolute;
   left: 153px;
   top: 23px;
+  max-width: 400px;
   text-align: center;
   display: flex;
   justify-content: center;
@@ -767,6 +756,9 @@ button.start-button-wrapper:hover {
   font-size: 18px;
   font-family: "Noto Sans";
   font-weight: 700;
+  line-height: 1.4;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .quiz-options {
@@ -967,7 +959,7 @@ button.start-button-wrapper:hover {
   left: 0; top: 0;
   width: 100vw;
   height: 100vh;
-  background: url('Img/ending.png') no-repeat center center;
+  background: url('img/ending.png') no-repeat center center;
   background-size: cover;
   overflow: auto;
   z-index: 20;
@@ -1073,7 +1065,7 @@ button.start-button-wrapper:hover {
   position: absolute;
   top: 0; left: 0;
   width: 100vw; height: 100vh;
-  background-image: url(Img/ending-credit.png);
+  background-image: url(img/ending-credit.png);
   background-size: cover;
   background-position: center;
   overflow: hidden;
