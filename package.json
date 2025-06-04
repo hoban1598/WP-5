@@ -1,0 +1,43 @@
+{
+  "name": "wp-5",
+  "version": "1.0.0",
+  "description": "Code of Legends - 웹 프로그래밍 게임",
+  "main": "index.html",
+  "scripts": {
+    "start": "live-server --port=3000 --open=/index.html",
+    "dev": "live-server --port=3000 --open=/index.html --watch=.",
+    "serve": "http-server -p 8080 -o",
+    "express": "node app.js",
+    "server": "nodemon app.js",
+    "build": "echo 'Building project...' && echo 'Project is ready for deployment!'",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hoban1598/WP-5.git"
+  },
+  "keywords": [
+    "game",
+    "web",
+    "javascript",
+    "html5",
+    "canvas",
+    "education"
+  ],
+  "author": "Team WP-5",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/hoban1598/WP-5/issues"
+  },
+  "homepage": "https://github.com/hoban1598/WP-5#readme",
+  "devDependencies": {
+    "concurrently": "^9.1.2",
+    "http-server": "^14.1.1",
+    "live-server": "^1.2.2",
+    "nodemon": "^3.1.10"
+  },
+  "dependencies": {
+    "express": "^5.1.0",
+    "serve-static": "^2.2.0"
+  }
+}
