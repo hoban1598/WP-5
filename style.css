@@ -1001,23 +1001,38 @@ button.start-button-wrapper:hover {
   background-size: cover;
   overflow: auto;
   z-index: 20;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  display: block;
 }
 .ending-content {
   position: relative;
-  width: 1920px;
-  height: 1080px;
+  width: 100vw;
+  height: 100vh;
   background: rgba(0,0,0,0.5);
   overflow: hidden;
+  margin: 0;
 }
+
+/* 엔딩 스텝들 */
+.ending-step {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: none; /* 기본적으로 숨김 */
+}
+
+.ending-step.active {
+  display: block; /* 활성화된 스텝만 표시 */
+}
+
 .ending-message-box {
   position: absolute;
   width: 500px;
   height: 130px;
-  left: 710px;
-  top: 475px;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
   background: #142011;
   border-radius: 10px;
   outline: 1px #59460F solid;
@@ -1039,8 +1054,9 @@ button.start-button-wrapper:hover {
   position: absolute;
   width: 80px;
   height: 40px;
-  left: 858px;
-  top: 701px;
+  left: 50%;
+  bottom: 10%;
+  transform: translateX(-50px);
   background: radial-gradient(ellipse 50% 50% at 50% 50%, #EA950A 0%, #EA660B 100%);
   border-radius: 20px;
   border: none;
@@ -1057,8 +1073,9 @@ button.start-button-wrapper:hover {
   position: absolute;
   width: 90px;
   height: 40px;
-  left: 955px;
-  top: 701px;
+  left: 50%;
+  bottom: 10%;
+  transform: translateX(10px);
   background: radial-gradient(ellipse 50% 50% at 50% 50%, #B3B3B3 0%, #848484 100%);
   border-radius: 20px;
   border: none;
@@ -1074,25 +1091,28 @@ button.start-button-wrapper:hover {
 .ending-demonking {
   position: absolute;
   width: 256px;
-  left: 960px;
-  top: 307px;
-  transform: translate(-50%, 0);
+  height: 256px;
+  left: 50%;
+  top: 28.426%;
+  transform: translateX(-50%);
   z-index: 2;
 }
 .ending-hero {
   position: absolute;
   width: 76px;
-  left: 775px;
-  top: 684px;
-  transform: translate(-50%, 0);
+  height: 76px;
+  left: 40.365%;
+  top: 63.333%;
+  transform: translateX(-50%);
   z-index: 2;
 }
 .ending-dragon {
   position: absolute;
   width: 258px;
-  left: 1010px;
-  top: 427px;
-  transform: translate(-50%, 0);
+  height: 258px;
+  left: 52.604%;
+  top: 39.537%;
+  transform: translateX(-50%);
   z-index: 2;
 }
 
@@ -1113,17 +1133,19 @@ button.start-button-wrapper:hover {
 }
 .ending-credit-text {
   position: absolute;
-  left: 50%; top: 50%;
+  left: 50%; 
+  top: 50%;
   transform: translate(-50%, -50%);
   text-align: center;
-  color: #A97B1C;
-  font-size: 7vw;
-  min-font-size: 40px;
-  max-font-size: 120px;
+  justify-content: center;
+  display: flex;
+  flex-direction: column;
+  color: #D1A21E;
+  font-size: 72px;
   font-family: "Source Serif Pro";
-  font-weight: 700;
-  text-shadow: 2px 2px 8px rgba(0,0,0,0.25);
-  letter-spacing: 2px;
+  font-weight: 600;
+  word-wrap: break-word;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.25);
   z-index: 100;
 }
 
