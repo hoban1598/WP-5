@@ -51,9 +51,9 @@ const afterDragonMessages = [
 window.globalBgmAudio = null;
 
 // ======= BGM 파일명 상수화 =======
-const BGM_BOSS = 'sound/마왕조우.mp3';
-const BGM_ENDING1 = 'sound/엔딩1.mp3';
-const BGM_ENDING2 = 'sound/엔딩2.mp3';
+const BGM_BOSS = 'sound/배경음악/마왕조우.mp3';
+const BGM_ENDING1 = 'sound/배경음악/엔딩1.mp3';
+const BGM_ENDING2 = 'sound/배경음악/엔딩2.mp3';
 
 // ======= BGM 재생 함수 =======
 function playBgm(src, loop = false) {
@@ -91,10 +91,10 @@ function playSelectedBGM() {
 }
 
 function playEndingSound() {
-  playBgm('sound/엔딩1.mp3', false);
+  playBgm('sound/배경음악/엔딩1.mp3', false);
 }
 function playCreditSound() {
-  playBgm('sound/엔딩2.mp3', false); // 엔딩크레딧.mp3 대신 엔딩2.mp3 사용
+  playBgm('sound/배경음악/엔딩2.mp3', false); // 엔딩크레딧.mp3 대신 엔딩2.mp3 사용
 }
 
 // ======= 전역 함수 선언 =======
@@ -143,13 +143,47 @@ function playSound(soundFile) {
   }
 }
 /** 벽돌 히트 사운드(임시) */
-function playBrickHitSound() {}
+function playBrickHitSound() {
+  playSound('sound/효과음/일반벽돌깨지는소리.wav');
+}
 /** 퀴즈 정답 사운드(임시) */
-function playQuizCorrectSound() {}
+function playQuizCorrectSound() {
+  playSound('sound/효과음/퀴즈정답-수정.wav');
+}
 /** 퀴즈 오답 사운드(임시) */
-function playQuizWrongSound() {}
+function playQuizWrongSound() {
+  playSound('sound/효과음/퀴즈오답.wav');
+}
+/** 퀴즈 벽돌 깨지는 사운드 */
+function playQuizBrickHitSound() {
+  playSound('sound/효과음/퀴즈벽돌깨지는소리.wav');
+}
+/** 장비 획득 사운드 */
+function playItemGetSound() {
+  playSound('sound/효과음/장비획득1.wav');
+}
+/** 생명 잃는 사운드 */
+function playLifeLossSound() {
+  playSound('sound/효과음/목숨 잃었을때.wav');
+}
+/** 게임 실패 사운드 */
+function playGameOverSound() {
+  playSound('sound/효과음/게임실패1.wav');
+}
+/** 공 튕기는 사운드 */
+function playBallBounceSound() {
+  playSound('sound/효과음/공튕기는소리.wav');
+}
+/** UI 클릭 사운드 */
+function playClickSound() {
+  playSound('sound/효과음/클릭_사용자클릭.wav');
+}
+/** UI 설정 버튼 클릭 사운드 */
+function playSettingClickSound() {
+  playSound('sound/효과음/클릭_설정버튼.wav');
+}
 /** 마왕 조우 사운드 재생 */
-function playBossSound() { playSound('sound/마왕조우.mp3'); }
+function playBossSound() { playSound('sound/배경음악/마왕조우.mp3'); }
 /** 현재 스테이지의 퀴즈 라벨 랜덤 반환 */
 function getQuizLabelForStage() {
   return selectedQuizLabels[Math.floor(Math.random() * selectedQuizLabels.length)];
@@ -527,11 +561,13 @@ function detectCollision() {
   // 좌우 벽 충돌
   if (ballNextX - 15 < leftWall || ballNextX + 15 > rightWall) {
     ball.dx = -ball.dx;
+    playBallBounceSound();
   }
   
   // 천장 충돌
   if (ball.y + ball.dy < ball.radius) {
     ball.dy = -ball.dy;
+    playBallBounceSound();
   }
   
   // 바닥 충돌 - 패들 충돌보다 먼저 확인
@@ -553,6 +589,7 @@ function detectCollision() {
     // 공을 패들 위쪽으로 정확히 위치시키기
     ball.y = paddle.y - ball.radius;
     ball.dy = -Math.abs(ball.dy); // 반드시 위쪽으로 튕기도록
+    playBallBounceSound();
   }
   
   // 벽돌 충돌
@@ -569,6 +606,8 @@ function detectCollision() {
           ball.dy = -ball.dy;
           if (brick.status === 2) {
             pauseGame();
+            // 퀴즈 벽돌 깨지는 사운드
+            playQuizBrickHitSound();
             // 벽돌 라벨에 따른 퀴즈 선택
             const quiz = getQuizByBrickLabel(brick.label);
             showQuizModal(quiz);
@@ -676,7 +715,12 @@ function resumeGame() { isGamePaused = false; animationId = requestAnimationFram
 /** 공과 패들 위치 초기화 */
 function resetBallAndPaddle() { ball.x = canvas.width / 2; ball.y = canvas.height - 100; ball.dx = 3; ball.dy = -3; paddle.x = (canvas.width - paddle.width) / 2; }
 /** 게임오버 처리 */
-function gameOver() { cancelAnimationFrame(animationId); clearInterval(timerInterval); showGameOverModal(); }
+function gameOver() { 
+  cancelAnimationFrame(animationId); 
+  clearInterval(timerInterval); 
+  playGameOverSound();
+  showGameOverModal(); 
+}
 /** 게임오버/스테이지 클리어 체크 */
 function checkGameOverOrClear() {
   if (lives <= 0) {
@@ -745,6 +789,7 @@ function restartGame() {
 /** 장비획득 팝업 표시 및 스테이지 전환 */
 function showItemPopup(stage) {
   pauseGame();
+  playItemGetSound(); // 장비 획득 효과음 재생
   let itemImage, itemTitle, equipmentCount;
   switch(stage) {
     case 1:
@@ -816,7 +861,12 @@ function getRandomQuizForStage(stage) {
 /** 점수 증가 및 HUD 반영 */
 function updateScore(amount) { score += amount; $('.hud-box.score .hud-label').text(`점수: ${score}`); }
 /** 생명 감소 및 HUD 반영 */
-function decreaseLife() { lives--; updateLivesDisplay(); checkGameOverOrClear(); }
+function decreaseLife() { 
+  lives--; 
+  playLifeLossSound(); 
+  updateLivesDisplay(); 
+  checkGameOverOrClear(); 
+}
 /** 생명 표시 갱신 */
 function updateLivesDisplay() { $('.hud-box.life .heart-img').each(function (index) { if (index < lives) { $(this).show(); } else { $(this).hide(); } }); }
 /** 제한시간 감소 및 HUD 반영 */
@@ -860,6 +910,7 @@ $(document).ready(function () {
   $('.start').show();
   $('.prologue-wrapper, .setup-wrapper, .game-wrapper, .ending-wrapper, .endingcredit-wrapper').hide();
   $('#start-button').on('click', function () {
+    playClickSound();
     $('.start').fadeOut(300, function () {
       $('.prologue-wrapper').fadeIn(300);
     });
@@ -872,6 +923,7 @@ $(document).ready(function () {
   ];
   let currentMessageIndex = 0;
   $('.prologue-button.next').on('click', function () {
+    playClickSound();
     currentMessageIndex++;
     if (currentMessageIndex < messages.length) {
       $('.prologue-message').html(messages[currentMessageIndex]);
@@ -884,6 +936,7 @@ $(document).ready(function () {
     }
   });
   $('.prologue-button.skip').on('click', function () {
+    playClickSound();
     $('.prologue-wrapper').fadeOut(300, function () {
       $('.setup-wrapper').fadeIn(300);
     });
@@ -897,6 +950,7 @@ $(document).ready(function () {
     ];
     selectors.forEach(selector => {
       $('.setup-wrapper').on('click', selector, function () {
+        playSettingClickSound();
         $(this).parent().find(selector).removeClass('selected');
         $(this).addClass('selected');
       });
@@ -904,6 +958,7 @@ $(document).ready(function () {
   }
   setupSelectionHandlers();
   $('.setting-start-button').on('click', function () {
+    playClickSound();
     const characterSelected = $('.character-card.selected').length > 0;
     const petSelected = $('.pet-option.selected').length > 0;
     const bgmSelected = $('.bgm-option.selected').length > 0;
@@ -927,9 +982,11 @@ $(document).ready(function () {
   });
   // 게임오버 다시시작 버튼 이벤트 등록
   $('#restartBtn').on('click', function() {
+    playClickSound();
     restartGame();
   });
   $('.ending-button.next').on('click', function () {
+    playClickSound();
     if (!dragonPhase) {
       endingMessageIndex++;
       if (endingMessageIndex < beforeDragonMessages.length) {
@@ -961,6 +1018,7 @@ $(document).ready(function () {
     }
   });
   $('.ending-button.skip').on('click', function () {
+    playClickSound();
     goToEndingCredit();
   });
 });
