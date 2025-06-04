@@ -81,7 +81,7 @@ body {
   margin-top: 0;
   padding: 0;
 
-  font-family: "Source Serif Pro";
+  font-family: "Source Serif 4";
   font-size: 110px;
   font-weight: 600;
   line-height: 1.1;
@@ -781,8 +781,9 @@ button.start-button-wrapper:hover {
 .quiz-options-row {
   width: 100%;
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
+  gap: 10px;
 }
 
 .quiz-option {
@@ -1030,9 +1031,8 @@ button.start-button-wrapper:hover {
   position: absolute;
   width: 500px;
   height: 130px;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
+  left: 36.979%; /* 710px/1920px = 36.979% */
+  top: 43.981%; /* 475px/1080px = 43.981% */
   background: #142011;
   border-radius: 10px;
   outline: 1px #59460F solid;
@@ -1054,9 +1054,8 @@ button.start-button-wrapper:hover {
   position: absolute;
   width: 80px;
   height: 40px;
-  left: 50%;
-  bottom: 10%;
-  transform: translateX(-50px);
+  left: 44.6875%; /* 858px/1920px = 44.6875% */
+  top: 64.907%; /* 701px/1080px = 64.907% */
   background: radial-gradient(ellipse 50% 50% at 50% 50%, #EA950A 0%, #EA660B 100%);
   border-radius: 20px;
   border: none;
@@ -1067,15 +1066,15 @@ button.start-button-wrapper:hover {
   font-size: 16px;
   font-family: 'Noto Sans';
   font-weight: 700;
+  cursor: pointer;
   z-index: 11;
 }
 .ending-button.skip {
   position: absolute;
   width: 90px;
   height: 40px;
-  left: 50%;
-  bottom: 10%;
-  transform: translateX(10px);
+  left: 49.739%; /* 955px/1920px = 49.739% */
+  top: 64.907%; /* 701px/1080px = 64.907% */
   background: radial-gradient(ellipse 50% 50% at 50% 50%, #B3B3B3 0%, #848484 100%);
   border-radius: 20px;
   border: none;
@@ -1086,6 +1085,7 @@ button.start-button-wrapper:hover {
   font-size: 16px;
   font-family: 'Noto Sans';
   font-weight: 700;
+  cursor: pointer;
   z-index: 11;
 }
 .ending-demonking {
@@ -1120,7 +1120,7 @@ button.start-button-wrapper:hover {
 /* 엔딩크레딧 화면 */
 /* ============================= */
 .endingcredit-wrapper {
-  position: absolute;
+  position: fixed;
   top: 0; left: 0;
   width: 100vw; height: 100vh;
   background-image: url(img/ending-credit.png);
@@ -1131,21 +1131,27 @@ button.start-button-wrapper:hover {
   justify-content: center;
   align-items: center;
 }
+
+.ending-credit-screen {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
 .ending-credit-text {
   position: absolute;
-  left: 50%; 
-  top: 50%;
-  transform: translate(-50%, -50%);
-  text-align: center;
-  justify-content: center;
-  display: flex;
-  flex-direction: column;
-  color: #D1A21E;
+  left: 43.854%; /* 842px/1920px = 43.854% */
+  top: 20.833%; /* 225px/1080px = 20.833% */
   font-size: 72px;
-  font-family: "Source Serif Pro";
+  font-family: "Source Serif 4";
   font-weight: 600;
   word-wrap: break-word;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.25);
+  background: radial-gradient(82.67% 82.67% at 50% 50%, #D1A21E 0%, #302504 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.25));
   z-index: 100;
 }
 
@@ -1233,6 +1239,56 @@ button.start-button-wrapper:hover {
   font-size: 16px;
   font-family: "Noto Sans";
   font-weight: 700;
+}
+
+/* ending-buttons 컨테이너를 버튼 영역에 맞게 위치 설정 */
+.ending-buttons {
+  position: absolute;
+  width: 20%; /* 버튼들을 포함할 적절한 너비 */
+  height: 10%; /* 버튼들을 포함할 적절한 높이 */
+  left: 42%; /* 버튼 영역의 시작점 */
+  top: 62%; /* 버튼 영역의 시작점 */
+  z-index: 11;
+}
+
+.ending-button.next {
+  position: absolute;
+  width: 80px;
+  height: 40px;
+  left: 10%; /* ending-buttons 내에서의 상대 위치 */
+  top: 30%; /* ending-buttons 내에서의 상대 위치 */
+  background: radial-gradient(ellipse 50% 50% at 50% 50%, #EA950A 0%, #EA660B 100%);
+  border-radius: 20px;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 16px;
+  font-family: 'Noto Sans';
+  font-weight: 700;
+  cursor: pointer;
+  z-index: 12;
+}
+
+.ending-button.skip {
+  position: absolute;
+  width: 90px;
+  height: 40px;
+  left: 55%; /* ending-buttons 내에서의 상대 위치 */
+  top: 30%; /* ending-buttons 내에서의 상대 위치 */
+  background: radial-gradient(ellipse 50% 50% at 50% 50%, #B3B3B3 0%, #848484 100%);
+  border-radius: 20px;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 16px;
+  font-family: 'Noto Sans';
+  font-weight: 700;
+  cursor: pointer;
+  z-index: 12;
 }
 
 /* ============================= */
