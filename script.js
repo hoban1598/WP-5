@@ -29,23 +29,24 @@ let endingMessageIndex = 0;
 let dragonPhase = false;
 const beforeDragonMessages = [
   "마왕: …후후, 결국 여기까지 왔구나.",
-  "마왕: 네가 모은 HTML, CSS, JS, jQuery… 그 모든 스킬은 내 시험을 무너뜨리기엔 부족하다!",
+  "마왕: HTML, CSS, JS, jQuery 이 모든 시련을 이겨냈더라도 나를 무너뜨리기엔 부족하다!",
   "주인공: 이 목소리… 설마…",
-  "마왕: 그래. 내가 바로 네 교수이자… 이 세계의 마왕이다.",
-  "주인공: 그럴 줄 알았어요. 수업마다 숨겨진 의도가 있었군요.",
+  "마왕: 그래. 내가 바로 예언가다. 그리고 너의 교수이기도 하지.",
+  "주인공: 이럴수가...당신이 마왕이었다니!",
   "마왕: 네가 배운 모든 건 사실… 기말고사를 강화하기 위한 장치였지.",
-  "주인공: 하지만 전부 익혔어요. 태그, 스타일, 로직, 이벤트… 이젠 저만의 웹이 있어요.",
-  "마왕: 하찮은 실습 몇 번으론 날 이길 수 없다!",
-  "주인공: 그 실습들이 지금의 저를 만들었어요. 자, 마지막 도전… 웹의 힘으로 끝내드릴게요.",
+  "주인공: 하지만 상관없어요. 태그, 스타일, 로직, 이벤트… 이젠 저만의 웹이 있어요.",
+  "마왕: 기세는 좋구나. 하지만, 그 정도 실습 몇 번으론 날 이길 수 없다!",
+  "주인공: 그 실습들이 지금의 저를 만들었어요. 자, 마지막 도전… 제 힘으로 끝내드릴게요.",
   "주인공: 용, 준비됐지?"
-];
+ ];
 const afterDragonMessages = [
-   "마왕: 그래, 그렇게 하자. 이제 너의 웹 실력을 테스트해보자.",
-  "주인공: 네, 교수님. 저는 준비됐어요. 언제든지 들어오시죠",
-  "마왕: 으갸악....100점이라니?!",
-  "주인공: 훗....기말고사도 별거 없군요. 이제 모든 수업은 끝났어요. 작별입니다, 교수님.",
+  "용: 크아앙~",
+  "마왕: 좋아. 이제 그 장비들과 함께 너를 없애주지.",
+  "주인공: 좋아, 난 그동안의 실습을 겪으며 강해졌어. 이제 결전의 시간이다!",
+  "마왕: 이럴수가... 100점이라니?!",
+  "주인공: 훗...기말고사도 별거 없군요. 이제 모든 게 끝났어요. 작별입니다, 교수님.",
   "…그리고 웹의 전설은 그렇게 막을 내렸다."
-];
+ ];
 
 // ======= 전역 BGM 오디오 객체 단일화 =======
 window.globalBgmAudio = null;
@@ -190,7 +191,7 @@ function getQuizLabelForStage() {
 }
 /** 캔버스 크기 고정 */
 function resizeCanvas() {
-  canvas = document.getElementById('gameCanvas');
+  canvas = $('#gameCanvas')[0];
   if (!canvas) return;
   canvas.width = 720;
   canvas.height = 580;
@@ -209,29 +210,46 @@ function initCanvasGame() {
   $('#stage-label').text(`Stage${currentStage}`);
   bricks = [];
   let quizData = [];
-  canvas = document.getElementById('gameCanvas');
+  canvas = $('#gameCanvas')[0];
   ctx = canvas.getContext('2d');
   updateLivesDisplay();
-  ball = { x: canvas.width / 2, y: canvas.height - 100, radius: 15, dx: 3, dy: -3, image: new Image() };
+  
+  // 초기 공 위치와 속도 설정
+  ball = { x: canvas.width / 2, y: canvas.height - 104, radius: 10 };
+  
+  // 스테이지별 초기 공 속도 설정 (단순화)
+  if (currentStage === 1) {
+    ball.dx = 3; // Stage 1: 속도 3
+    ball.dy = -3; // Stage 1: 속도 3
+  } else if (currentStage === 2) {
+    ball.dx = 4; // Stage 2: 속도 4
+    ball.dy = -4; // Stage 2: 속도 4
+  } else {
+    ball.dx = 5; // Stage 3: 속도 5
+    ball.dy = -5; // Stage 3: 속도 5
+  }
+  
+  ball.image = new Image();
   ball.image.src = getSelectedPetImage();
-  // 공 생성 후 속도 정규화
-  normalizeSpeed();
   paddle = { width: 156, height: 19, x: (canvas.width - 156) / 2, y: canvas.height - 64, speed: 7, movingLeft: false, movingRight: false, image: new Image() };
   paddle.image.src = getSelectedCharacterImage();
-  let rowCount;
+  
+  // 모든 스테이지 동일한 벽돌 배치: 3행 7열 = 21개
+  let rowCount = 3;
   let colCount = 7;
-  if (currentStage === 1) rowCount = 3; else rowCount = 4;
   const brickWidth = 89, brickHeight = 24, brickPadding = 0, offsetTop = 50;
   const totalBrickWidth = colCount * brickWidth + (colCount - 1) * brickPadding;
   const offsetLeft = (canvas.width - totalBrickWidth) / 2;
   
-  // 퀴즈 벽돌 개수 고정
-  const totalBricks = colCount * rowCount;
+  // 스테이지별 퀴즈 벽돌 개수 설정
+  const totalBricks = colCount * rowCount; // 21개
   let quizBrickCount;
   if (currentStage === 1) {
-    quizBrickCount = 6; // Stage 1: 21개 중 6개
+    quizBrickCount = 6; // Stage 1: 일반 15개, 퀴즈 6개
+  } else if (currentStage === 2) {
+    quizBrickCount = 9; // Stage 2: 일반 12개, 퀴즈 9개
   } else {
-    quizBrickCount = 9; // Stage 2,3: 28개 중 9개
+    quizBrickCount = 12; // Stage 3: 일반 9개, 퀴즈 12개
   }
   
   // 랜덤한 위치에 퀴즈 벽돌 배치를 위한 인덱스 배열 생성
@@ -261,19 +279,20 @@ function initCanvasGame() {
     }
   }
   loadQuizData();
-  // 기존 mousemove 이벤트 제거 후 재등록
-  if (canvas._mousemoveHandler) {
-    canvas.removeEventListener('mousemove', canvas._mousemoveHandler);
-  }
-  canvas._mousemoveHandler = function (e) {
+  
+  // jQuery로 이벤트 처리 변경
+  const $canvas = $('#gameCanvas');
+  $canvas.off('mousemove'); // 기존 이벤트 제거
+  
+  $canvas.on('mousemove', function(e) {
     const rect = canvas.getBoundingClientRect();
     const mouseX = e.clientX - rect.left;
     let newX = mouseX - paddle.width / 2;
     if (newX < 0) newX = 0;
     if (newX > canvas.width - paddle.width - 0.5) newX = canvas.width - paddle.width;
     paddle.x = newX;
-  };
-  canvas.addEventListener('mousemove', canvas._mousemoveHandler);
+  });
+  
   // 게임 시작 (일시정지 상태 해제)
   isGamePaused = false;
   animationId = requestAnimationFrame(draw);
@@ -471,17 +490,39 @@ let quizData = [
     "options": ["success()", "done()", "callback()", "after()"],
     "correct": 1,
     "explanation": "done() 메서드는 AJAX 요청이 성공했을 때 실행되는 콜백 함수를 정의합니다."
+  },
+  {
+    "id": 25,
+    "category": "jquery",
+    "question": "jQuery에서 클래스를 추가하는 메서드는?",
+    "options": ["addClass()", "setClass()", "appendClass()", "newClass()"],
+    "correct": 0,
+    "explanation": "addClass() 메서드는 요소에 새로운 클래스를 추가합니다."
+  },
+  {
+    "id": 26,
+    "category": "jquery",
+    "question": "jQuery에서 HTML 내용을 변경하는 메서드는?",
+    "options": ["html()", "text()", "val()", "appendHTML()"],
+    "correct": 0,
+    "explanation": "html() 메서드는 선택한 요소의 HTML 콘텐츠를 가져오거나 설정합니다."
+  },
+  {
+    "id": 27,
+    "category": "jquery",
+    "question": "jQuery에서 입력 필드의 값을 가져오는 메서드는?",
+    "options": ["val()", "getValue()", "text()", "input()"],
+    "correct": 0,
+    "explanation": "val() 메서드는 입력 필드의 값을 가져오거나 설정합니다."
   }
 ];
 
 function loadQuizData() {
-  console.log('퀴즈 데이터 로드 완료:', quizData.length + '개 문제');
-  console.log('카테고리별 문제 수:');
+  // 퀴즈 데이터를 로드하는 함수 (console.log 제거)
   const categories = {};
   quizData.forEach(quiz => {
     categories[quiz.category] = (categories[quiz.category] || 0) + 1;
   });
-  console.log(categories);
 }
 /** 게임 루프(프레임마다 그리기) */
 function draw() {
@@ -556,98 +597,55 @@ function getBrickColor(status, stage) {
   }
   return "#84C669";
 }
-/** 공의 속도 크기를 일정하게 유지하는 함수 */
-function normalizeSpeed() {
-  const targetSpeed = 3; // 목표 속도 크기
-  const currentSpeed = Math.sqrt(ball.dx * ball.dx + ball.dy * ball.dy);
-  if (currentSpeed > 0) {
-    ball.dx = (ball.dx / currentSpeed) * targetSpeed;
-    ball.dy = (ball.dy / currentSpeed) * targetSpeed;
-  }
-}
 /** 충돌 감지 및 처리 */
 function detectCollision() {
-  const leftWall = 0;
-  const rightWall = canvas.width;
-  const ballNextX = ball.x + ball.dx;
-  const ballNextY = ball.y + ball.dy;
-  
-  // 충돌 플래그 (한 프레임에 하나의 충돌만 처리)
-  let collisionDetected = false;
-  
   // 좌우 벽 충돌
-  if (ballNextX - ball.radius < leftWall || ballNextX + ball.radius > rightWall) {
-    ball.dx = -ball.dx; // 단순히 방향만 반전
-    normalizeSpeed(); // 속도 크기 정규화
+  if (ball.x + ball.dx < ball.radius || ball.x + ball.dx > canvas.width - ball.radius) {
+    ball.dx = -ball.dx;
     playBallBounceSound();
-    collisionDetected = true;
   }
   
   // 천장 충돌
-  if (ballNextY - ball.radius < 0 && !collisionDetected) {
-    ball.dy = -ball.dy; // 단순히 방향만 반전
-    normalizeSpeed(); // 속도 크기 정규화
+  if (ball.y + ball.dy < ball.radius) {
+    ball.dy = -ball.dy;
     playBallBounceSound();
-    collisionDetected = true;
   }
   
-  // 바닥 충돌 - 패들 충돌보다 먼저 확인
-  if (ballNextY + ball.radius > canvas.height) {
+  // 바닥 충돌
+  if (ball.y + ball.dy > canvas.height - ball.radius) {
     decreaseLife();
     resetBallAndPaddle();
-    return; // 바닥에 닿으면 즉시 리턴하여 다른 충돌 처리 방지
+    return;
   }
   
-  // 패들 충돌 - 더 정확한 충돌 감지
-  if (!collisionDetected &&
-    ball.dy > 0 && // 공이 아래로 움직일 때만
-    ballNextX >= paddle.x - ball.radius && // 공이 패들 범위에 있고
-    ballNextX <= paddle.x + paddle.width + ball.radius &&
-    ballNextY + ball.radius >= paddle.y && // 공이 패들과 겹치거나
-    ballNextY + ball.radius <= paddle.y + paddle.height && // 패들 영역 안에 있을 때
-    ball.y + ball.radius <= paddle.y // 공의 하단이 패들 상단보다 위에 있을 때
-  ) {
-    // 공을 패들 위쪽으로 정확히 위치시키기
-    ball.y = paddle.y - ball.radius;
-    ball.dy = -ball.dy; // 단순히 방향만 반전
-    normalizeSpeed(); // 속도 크기 정규화
+  // 패들 충돌
+  if (ball.x > paddle.x && ball.x < paddle.x + paddle.width && 
+      ball.y + ball.dy > paddle.y - ball.radius && ball.dy > 0) {
+    ball.dy = -ball.dy;
     playBallBounceSound();
-    collisionDetected = true;
   }
   
-  // 벽돌 충돌 (한 프레임에 하나의 벽돌만 처리)
-  if (!collisionDetected) {
-    for (let c = 0; c < bricks.length && !collisionDetected; c++) {
-      for (let r = 0; r < bricks[c].length && !collisionDetected; r++) {
-        const brick = bricks[c][r];
-        if (brick.status > 0) {
-          // 더 정확한 벽돌 충돌 감지 (공의 중심점이 벽돌 내부에 있는지 확인)
-          if (
-            ball.x >= brick.x &&
-            ball.x <= brick.x + brick.width &&
-            ball.y >= brick.y &&
-            ball.y <= brick.y + brick.height
-          ) {
-            // 간단한 충돌 처리: 항상 dy만 반전 (위/아래에서 충돌한다고 가정)
-            ball.dy = -ball.dy;
-            normalizeSpeed(); // 속도 크기 정규화
-            
-            if (brick.status === 2) {
-              pauseGame();
-              // 퀴즈 벽돌 깨지는 사운드
-              playQuizBrickHitSound();
-              // 벽돌 라벨에 따른 퀴즈 선택
-              const quiz = getQuizByBrickLabel(brick.label);
-              showQuizModal(quiz);
-              window._currentQuizBrick = brick;
-              return;
-            } else {
-              updateScore(100);
-              playBrickHitSound();
-              brick.status = 0;
-              checkGameOverOrClear();
-            }
-            collisionDetected = true;
+  // 벽돌 충돌
+  for (let c = 0; c < bricks.length; c++) {
+    for (let r = 0; r < bricks[c].length; r++) {
+      const brick = bricks[c][r];
+      if (brick.status > 0) {
+        if (ball.x > brick.x && ball.x < brick.x + brick.width && 
+            ball.y > brick.y && ball.y < brick.y + brick.height) {
+          ball.dy = -ball.dy;
+          
+          if (brick.status === 2) {
+            pauseGame();
+            playQuizBrickHitSound();
+            const quiz = getQuizByBrickLabel(brick.label);
+            showQuizModal(quiz);
+            window._currentQuizBrick = brick;
+            return;
+          } else {
+            updateScore(100);
+            playBrickHitSound();
+            brick.status = 0;
+            checkGameOverOrClear();
           }
         }
       }
@@ -743,20 +741,26 @@ function pauseGame() { isGamePaused = true; cancelAnimationFrame(animationId); c
 /** 게임 재개 */
 function resumeGame() { 
   isGamePaused = false; 
-  // 재개 시 속도 정규화로 일관성 보장
-  normalizeSpeed();
   animationId = requestAnimationFrame(draw); 
   timerInterval = setInterval(updateTimer, 1000); 
 }
 /** 공과 패들 위치 초기화 */
 function resetBallAndPaddle() { 
   ball.x = canvas.width / 2; 
-  ball.y = canvas.height - 100; 
-  // 속도를 고정값으로 설정하여 일관성 유지
-  ball.dx = 3; 
-  ball.dy = -3; 
-  // 속도 정규화로 정확한 크기 보장
-  normalizeSpeed();
+  ball.y = canvas.height - 104;
+  
+  // 스테이지별 공 속도 재설정
+  if (currentStage === 1) {
+    ball.dx = 3; // Stage 1: 속도 3
+    ball.dy = -3;
+  } else if (currentStage === 2) {
+    ball.dx = 4; // Stage 2: 속도 4
+    ball.dy = -4;
+  } else {
+    ball.dx = 5; // Stage 3: 속도 5
+    ball.dy = -5;
+  }
+  
   paddle.x = (canvas.width - paddle.width) / 2; 
 }
 /** 게임오버 처리 */

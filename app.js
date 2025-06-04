@@ -29,22 +29,17 @@ app.use((req, res, next) => {
 const server = http.createServer(app);
 
 server.listen(PORT, HOST, () => {
-  console.log(`🎮 Code of Legends 서버가 실행되었습니다!`);
-  console.log(`🌐 주소: http://${HOST}:${PORT}`);
-  console.log(`📁 정적 파일 경로: ${__dirname}`);
-  console.log(`🎯 게임을 시작하려면 브라우저에서 위 주소로 접속하세요!`);
+  // 서버 시작 로그 제거
 });
 
 // 서버 에러 처리
 server.on('error', (err) => {
-  console.error('서버 에러:', err);
+  // 에러 로그 제거 (필요시 다른 처리 방법 고려)
 });
 
 // 프로세스 종료 처리
 process.on('SIGINT', () => {
-  console.log('\n서버를 종료합니다...');
   server.close(() => {
-    console.log('서버가 정상적으로 종료되었습니다.');
     process.exit(0);
   });
 });
