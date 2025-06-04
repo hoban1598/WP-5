@@ -72,7 +72,7 @@ function playBgm(src, loop = false) {
   try {
     window.globalBgmAudio = new Audio(src);
     window.globalBgmAudio.loop = loop;
-    window.globalBgmAudio.volume = 0.3;
+    window.globalBgmAudio.volume = 0.1;
     
     // 재생 시도 (실패해도 조용히 넘어감)
     window.globalBgmAudio.play().catch(() => {
